@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Prova de conceito da EdTech de aprendizado adaptativo por curso (dados fictícios).">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Trilha Adaptativa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: barra de controle da demo no topo; por perfil, área principal + coluna lateral com a trilha do curso. */
+:root{
+  --bg:#eef2f5; --surface:#ffffff; --sunk:#e3e9ee; --ink:#13202a; --muted:#566874; --line:#d3dce3;
+  --accent:#2a55d4; --accent-soft:#dfe7fb; --ok:#1d7f55; --ok-soft:#dcf1e7; --bad:#bf3b2b; --bad-soft:#f9e1dd;
+  --xp:#a86d00; --xp-soft:#fbefd2; --warn:#9a5b00;
+  --z1:#e7eef9; --z2:#dfe7f6; --z3:#d5e0f3;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1419; --surface:#161f26; --sunk:#1d2830; --ink:#e4ecf1; --muted:#97a8b3; --line:#2a3741;
+  --accent:#86a4ff; --accent-soft:#22305a; --ok:#4fc58f; --ok-soft:#16352a; --bad:#ff8a77; --bad-soft:#3d1f1b;
+  --xp:#f1c15a; --xp-soft:#3a2f14; --warn:#f0b25a;
+  --z1:#1b2531; --z2:#1f2a38; --z3:#243142; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0e1419; --surface:#161f26; --sunk:#1d2830; --ink:#e4ecf1; --muted:#97a8b3; --line:#2a3741;
+  --accent:#86a4ff; --accent-soft:#22305a; --ok:#4fc58f; --ok-soft:#16352a; --bad:#ff8a77; --bad-soft:#3d1f1b;
+  --xp:#f1c15a; --xp-soft:#3a2f14; --warn:#f0b25a;
+  --z1:#1b2531; --z2:#1f2a38; --z3:#243142; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:1.6rem}h2{font-size:1.25rem}h3{font-size:1rem}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+
+/* topo */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand strong{font-family:var(--f-display);font-size:1.25rem;display:block;line-height:1}
+.brand small{color:var(--muted);font-size:.78rem}
+.logo{display:flex;align-items:flex-end;gap:3px;height:26px}
+.logo i{display:block;width:7px;border-radius:2px;background:var(--accent)}
+.logo i:nth-child(1){height:9px;opacity:.45}.logo i:nth-child(2){height:16px;opacity:.7}.logo i:nth-child(3){height:24px}
+.seg{display:flex;background:var(--sunk);border-radius:999px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:999px;font-weight:600;font-size:.88rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .12)}
+.dia{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dia b{font-weight:600}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--surface);padding:8px 14px;border-radius:8px;font-weight:600;font-size:.9rem}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:5px 10px;font-size:.82rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+
+main{padding-block:22px 40px;display:flex;flex-direction:column;gap:20px}
+
+/* faixa de cursos do aluno */
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ccard{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ccard[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.ccard .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ccard strong{font-weight:600}
+.ccard.add{border-style:dashed;justify-content:center;color:var(--accent);font-weight:600;background:transparent}
+.pbar{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.pbar>span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.pbar.done>span{background:var(--ok)}
+
+/* trilha */
+.trilha{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:900px){.trilha{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.tag{font-size:.8rem;font-weight:600;padding:2px 10px;border-radius:99px;background:var(--sunk)}
+.dif{font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:99px;letter-spacing:.03em}
+.dif-F{background:var(--z1);color:var(--accent)}
+.dif-M{background:var(--accent-soft);color:var(--accent)}
+.dif-D{background:var(--accent);color:var(--surface)}
+.enun{font-family:var(--f-display);font-size:1.35rem;font-weight:500;margin:0 0 14px;text-wrap:pretty}
+pre.code{font-family:var(--f-mono);background:var(--sunk);border-radius:8px;padding:12px 14px;margin:0 0 16px;font-size:.92rem;overflow-x:auto;line-height:1.6}
+.ops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.ops{grid-template-columns:1fr}}
+.op{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px;min-height:52px}
+.op:hover:not([disabled]){border-color:var(--accent);background:var(--accent-soft)}
+.op .k{font-family:var(--f-mono);font-size:.8rem;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:var(--sunk);flex:none}
+.op[disabled]{cursor:default}
+.op.certa{border-color:var(--ok);background:var(--ok-soft)}
+.op.certa .k{background:var(--ok);color:var(--surface)}
+.op.errada{border-color:var(--bad);background:var(--bad-soft)}
+.op.errada .k{background:var(--bad);color:var(--surface)}
+.fb{margin-top:16px;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;border:1px solid}
+.fb.ok{background:var(--ok-soft);border-color:var(--ok)}
+.fb.erro{background:var(--bad-soft);border-color:var(--bad)}
+.fb .titulo{font-family:var(--f-display);font-size:1.1rem;font-weight:700}
+.fb.ok .titulo{color:var(--ok)}.fb.erro .titulo{color:var(--bad)}
+.fb p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.82rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line)}
+.chip.xp{background:var(--xp-soft);color:var(--xp);border-color:transparent}
+.chip.un{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.revisao{background:var(--surface);border:1px dashed var(--warn);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.revisao strong{color:var(--warn)}
+.fb-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.porque{margin-top:14px;font-size:.88rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.porque b{color:var(--ink);font-weight:600}
+
+/* lateral */
+.side{display:flex;flex-direction:column;gap:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--sunk);border-radius:8px;padding:8px 10px}
+.stat b{display:block;font-family:var(--f-mono);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.stat.xp b{color:var(--xp)}
+.conqs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.conqs li{font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;line-height:1.3}
+.conqs li.on{border-color:var(--xp);background:var(--xp-soft)}
+.conqs li.on b{color:var(--xp)}
+.conqs li:not(.on){color:var(--muted)}
+.conqs small{font-size:.72rem;color:var(--muted)}
+.tops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:t}
+.tops li{counter-increment:t;display:flex;flex-direction:column;gap:5px}
+.tops .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tops .h span:first-child::before{content:counter(t) ". ";color:var(--muted);font-family:var(--f-mono);font-size:.82rem}
+.tops li.lock{opacity:.55}
+.est{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.est.dom{color:var(--ok)}.est.lock{color:var(--muted)}.est.on{color:var(--accent)}
+
+/* barra de domínio com faixas */
+.dbar{position:relative;height:12px;border-radius:4px;overflow:hidden;display:flex;background:var(--z1)}
+.dbar .z{height:100%}
+.dbar .z1{width:40%;background:var(--z1)}.dbar .z2{width:30%;background:var(--z2)}.dbar .z3{width:30%;background:var(--z3)}
+.dbar .fill{position:absolute;left:0;top:3px;bottom:3px;background:var(--accent);border-radius:0 3px 3px 0;transition:width .35s ease}
+.dbar.done .fill{background:var(--ok)}
+.dbar .m80{position:absolute;left:80%;top:0;bottom:0;border-left:2px dotted var(--ink);opacity:.5}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.74rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:4px}
+
+/* motor */
+details.motor{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:0}
+details.motor summary{padding:14px 20px;font-weight:600;cursor:pointer}
+.motor-in{padding:0 20px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.motor ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:.88rem}
+
+/* catálogo */
+.filtros{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.filtros label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted);font-weight:600}
+input,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.filtros input{width:min(320px,100%)}
+.cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.cat .panel{display:flex;flex-direction:column;gap:10px;padding:18px}
+.cat p{margin:0;color:var(--muted);font-size:.9rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.detalhe{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+@media (max-width:800px){.detalhe{grid-template-columns:1fr}}
+.detalhe ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.back{background:none;border:0;color:var(--accent);font-weight:600;padding:0}
+
+/* professor */
+.head-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;font-weight:600;font-size:.88rem}
+.tabs button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.prof-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.prof-grid{grid-template-columns:1fr}}
+.linkbtn{background:none;border:0;padding:0;font-weight:600;color:var(--accent);text-align:left}
+tr.sel td{background:var(--accent-soft)}
+.flag{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--bad-soft);color:var(--bad);margin-left:6px;white-space:nowrap}
+.mini{display:flex;align-items:center;gap:8px;min-width:120px}
+.mini .pbar{flex:1}
+.pill{font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:99px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.erro{background:var(--bad-soft);color:var(--bad)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.check{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.check li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:8px;flex-wrap:wrap}
+.lvl{display:flex;gap:6px}
+.lvl span{font-family:var(--f-mono);font-size:.78rem;padding:1px 8px;border-radius:6px;background:var(--ok-soft);color:var(--ok)}
+.lvl span.zero{background:var(--bad-soft);color:var(--bad)}
+.note{font-size:.85rem;color:var(--muted);margin:0}
+.done-card{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;padding:36px 20px}
+.done-card .big{font-family:var(--f-display);font-size:2rem;color:var(--ok)}
+footer{padding-block:0 30px;color:var(--muted);font-size:.8rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============ utilidades ============ */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ri=(r,a,b)=>a+Math.floor(r()*(b-a+1));
+const pick=(r,arr)=>arr[Math.floor(r()*arr.length)];
+function shuffle(r,arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const fr=(n,d)=>{const g=gcd(n,d)||1;n/=g;d/=g;return d===1?String(n):`${n}/${d}`};
+const nf=x=>(Math.round(x*100)/100).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const brl=x=>'R$ '+x.toFixed(2).replace('.',',');
+const clamp=x=>Math.max(0,Math.min(100,x));
+const BASE=new Date(2026,10,3);
+const fmtDia=d=>{const x=new Date(BASE);x.setDate(x.getDate()+d);return x.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'})};
+
+/* monta questão de múltipla escolha com 4 alternativas únicas */
+function mk(r,enunciado,correta,distr,explicacao,fill,codigo){
+  correta=String(correta);const ops=[correta];
+  for(const d of distr){const s=String(d);if(!ops.includes(s))ops.push(s);if(ops.length===4)break}
+  let g=0;while(ops.length<4&&g++<60){const s=String(fill());if(!ops.includes(s))ops.push(s)}
+  const sh=shuffle(r,ops);return{enunciado,codigo:codigo||null,opcoes:sh,correta:sh.indexOf(correta),explicacao};
+}
+const nfill=(r,v,step=1)=>()=>v+ri(r,-6,6)*step;
+
+/* ============ parâmetros do motor (design D4) ============ */
+const PARAM={
+  delta:{ok:{F:10,M:15,D:20},erro:{F:-15,M:-10,D:-5}},
+  xp:{F:10,M:20,D:30},
+  dominado:80,
+};
+const DIF={F:'Fácil',M:'Médio',D:'Difícil'};
+const faixa=d=>d>=70?'D':d>=40?'M':'F';
+
+/* ============ conteúdo dos cursos ============ */
+const CURSOS=[
+ {id:'mat',titulo:'Matemática Básica',area:'Matemática',nivel:'Iniciante',prof:'marcos',status:'publicado',
+  curta:'Frações, decimais e porcentagem para o dia a dia.',
+  desc:'Revisão das operações que mais aparecem fora da escola: dividir uma conta, ler um desconto, comparar preços. Cada tópico se adapta ao seu ritmo.',
+  topicos:[
+   {nome:'Frações',material:'Para somar frações, os denominadores precisam ser iguais. Se forem diferentes, multiplique cada fração para chegar a um denominador comum. Para dividir, multiplique pela fração invertida.',gen:{
+    F:r=>{const b=ri(r,3,9),a=ri(r,1,b-1),c=ri(r,1,b-1),res=fr(a+c,b);return mk(r,`Quanto é ${a}/${b} + ${c}/${b}?`,res,[fr(a+c,2*b),fr(a*c,b),fr(a+c+1,b)],`Com denominadores iguais, somam-se apenas os numeradores: (${a} + ${c})/${b} = ${res}. Somar os denominadores é o erro mais comum.`,()=>fr(ri(r,1,14),b))},
+    M:r=>{const[b,d]=shuffle(r,[2,3,4,5,6]).slice(0,2),a=ri(r,1,b-1),c=ri(r,1,d-1),num=a*d+c*b,res=fr(num,b*d);return mk(r,`Quanto é ${a}/${b} + ${c}/${d}?`,res,[fr(a+c,b+d),fr(a+c,b*d),fr(a*c,b*d)],`Leve as duas ao denominador ${b*d}: ${a*d}/${b*d} + ${c*b}/${b*d} = ${num}/${b*d}${res!==num+'/'+(b*d)?' = '+res:''}.`,()=>fr(ri(r,1,20),b*d))},
+    D:r=>{const a=ri(r,1,5),b=ri(r,2,7),c=ri(r,1,5),d=ri(r,2,7),res=fr(a*d,b*c);return mk(r,`Quanto é ${a}/${b} ÷ ${c}/${d}?`,res,[fr(a*c,b*d),fr(b*c,a*d),fr(a*d+1,b*c)],`Dividir por uma fração é multiplicar pelo inverso dela: ${a}/${b} × ${d}/${c} = ${a*d}/${b*c}${res!==(a*d)+'/'+(b*c)?' = '+res:''}.`,()=>fr(ri(r,1,20),ri(r,2,12)))}
+   }},
+   {nome:'Decimais',material:'Na soma e na subtração, alinhe as vírgulas. Na multiplicação, calcule como se fossem inteiros e depois conte as casas decimais. Dividir por 0,5 é multiplicar por 2; por 0,25, multiplicar por 4.',gen:{
+    F:r=>{const x=ri(r,11,89),y=ri(r,11,89),s=(x+y)/10;return mk(r,`Quanto é ${nf(x/10)} + ${nf(y/10)}?`,nf(s),[nf(s+1),nf(s-0.1),nf((x+y)/100)],`Alinhe as vírgulas e some casa por casa: ${nf(x/10)} + ${nf(y/10)} = ${nf(s)}.`,()=>nf(s+ri(r,-9,9)/10))},
+    M:r=>{const x=ri(r,101,499),k=ri(r,3,9),p=x*k/100;return mk(r,`Quanto é ${nf(x/100)} × ${k}?`,nf(p),[nf(p*10),nf(Math.floor(x/100)*k),nf(p+1)],`Multiplique como inteiros (${x} × ${k} = ${x*k}) e depois volte duas casas decimais: ${nf(p)}.`,()=>nf(p+ri(r,-9,9)/10))},
+    D:r=>{const x=ri(r,3,40)/2,d=pick(r,[0.5,0.25]),res=x/d;return mk(r,`Quanto é ${nf(x)} ÷ ${nf(d)}?`,nf(res),[nf(x*d),nf(res/2),nf(res+1)],`${d===0.5?'Dividir por 0,5 é o mesmo que multiplicar por 2':'Dividir por 0,25 é o mesmo que multiplicar por 4'}: ${nf(x)} × ${1/d} = ${nf(res)}.`,()=>nf(res+ri(r,-6,6)))}
+   }},
+   {nome:'Porcentagem',material:'Porcentagem é uma fração de 100: 25% = 25/100. Para calcular p% de um valor, multiplique o valor por p e divida por 100. Atalhos: 10% é dividir por 10, 50% é a metade, 25% é um quarto.',gen:{
+    F:r=>{const p=pick(r,[10,50]),N=ri(r,2,30)*10,res=N*p/100;return mk(r,`Quanto é ${p}% de ${N}?`,nf(res),[nf(N-res),nf(res+10),nf(res*2)],p===10?`10% é dividir por 10: ${N} ÷ 10 = ${nf(res)}.`:`50% é a metade: ${N} ÷ 2 = ${nf(res)}.`,nfill(r,res,5))},
+    M:r=>{const p=pick(r,[15,20,25,30,40]),N=ri(r,2,20)*20,res=N*p/100;return mk(r,`Quanto é ${p}% de ${N}?`,nf(res),[nf(N-res),nf(res*2),nf(res+N/10)],`${p}% de ${N} = ${N} × ${p} ÷ 100 = ${nf(res)}.${p===25?' Atalho: 25% é um quarto.':''}`,nfill(r,res,2))},
+    D:r=>{const N=ri(r,4,30)*10,p=pick(r,[15,25,35]),desc=N*p/100,fin=N-desc;return mk(r,`Um tênis custa ${brl(N)} e está com ${p}% de desconto. Qual o preço final?`,brl(fin),[brl(desc),brl(N-p),brl(N+desc)],`O desconto é ${p}% de ${brl(N)} = ${brl(desc)}. Preço final: ${brl(N)} − ${brl(desc)} = ${brl(fin)}.`,()=>brl(fin+ri(r,-6,6)*5))}
+   }}
+  ]},
+ {id:'ing',titulo:'Inglês Inicial',area:'Idiomas',nivel:'Iniciante',prof:'julia',status:'publicado',
+  curta:'Verbo to be, presente simples e vocabulário essencial.',
+  desc:'Primeiros passos em inglês com frases curtas do cotidiano. O curso começa pelo verbo to be e só libera o próximo tópico quando você domina o anterior.',
+  topicos:[
+   {nome:'Verbo to be',material:'I am · you are · he/she/it is · we are · they are. Na pergunta, o verbo vem antes do sujeito: "Are you ready?". Na negativa, acrescente not: "She is not here."',pool:{
+    F:[{id:'tb1',e:'She ___ a teacher.',o:['is','are','am','be'],x:'Com he/she/it usamos "is": She is a teacher.'},
+       {id:'tb2',e:'I ___ happy today.',o:['am','is','are','be'],x:'Com I, sempre "am": I am happy.'}],
+    M:[{id:'tb3',e:'___ they at school now?',o:['Are','Is','Am','Be'],x:'They pede "are", e na pergunta o verbo vem antes do sujeito: Are they…?'},
+       {id:'tb4',e:'We ___ not tired.',o:['are','is','am','be'],x:'We pede "are". A negativa só acrescenta not: We are not tired.'}],
+    D:[{id:'tb5',e:'My brother and I ___ in the same class.',o:['are','is','am','be'],x:'"My brother and I" equivale a "we", então o verbo é "are".'},
+       {id:'tb6',e:'"Where ___ your keys?" "They ___ in my bag."',o:['are / are','is / are','are / is','is / is'],x:'Keys está no plural, e they também: are nos dois casos.'}]}},
+   {nome:'Presente simples',material:'Use para hábitos e fatos. Com he/she/it, o verbo ganha -s: she works, he goes. Perguntas e negativas usam do/does: "Does she like pizza?", "I don\'t like horror movies."',pool:{
+    F:[{id:'ps1',e:'He ___ coffee every morning.',o:['drinks','drink','drinking','is drink'],x:'Hábito com he: o verbo ganha -s. He drinks coffee.'},
+       {id:'ps2',e:'They ___ football on Sundays.',o:['play','plays','playing','is play'],x:'Com they, o verbo fica na forma base: They play.'}],
+    M:[{id:'ps3',e:'___ she like pizza?',o:['Does','Do','Is','Are'],x:'Perguntas com he/she/it usam "does", e o verbo volta à forma base: Does she like…?'},
+       {id:'ps4',e:'I ___ like horror movies.',o:["don't","doesn't","am not","not"],x:'Negativa com I usa "do not" (don\'t).'}],
+    D:[{id:'ps5',e:'The train ___ at 8 a.m. every day.',o:['leaves','is leaving','leave','left'],x:'Horários fixos e rotinas usam o presente simples, com -s para it: The train leaves.'},
+       {id:'ps6',e:'He usually ___ to work by bus, but today he ___ his bike.',o:['goes / is riding','go / rides','goes / rides','is going / ride'],x:'"Usually" pede presente simples (goes); "today", uma ação acontecendo agora, pede presente contínuo (is riding).'}]}},
+   {nome:'Vocabulário',material:'Cuidado com falsos cognatos: "actually" significa "na verdade", "pretend" significa "fingir", "push" significa "empurrar".',pool:{
+    F:[{id:'vo1',e:'Como se diz "cadeira" em inglês?',o:['chair','table','couch','door'],x:'Chair = cadeira. Table é mesa; couch, sofá.'},
+       {id:'vo2',e:'"Apple" significa:',o:['maçã','abacaxi','uva','banana'],x:'Apple = maçã.'}],
+    M:[{id:'vo3',e:'Qual palavra NÃO é um cômodo da casa?',o:['sweater','kitchen','bedroom','bathroom'],x:'Sweater é um agasalho. Kitchen, bedroom e bathroom são cozinha, quarto e banheiro.'},
+       {id:'vo4',e:'"I\'m hungry" quer dizer:',o:['Estou com fome','Estou com raiva','Estou com pressa','Estou cansado'],x:'Hungry = com fome. Angry seria com raiva.'}],
+    D:[{id:'vo5',e:'"Actually" significa:',o:['na verdade','atualmente','na hora','de fato atual'],x:'Falso cognato: actually = na verdade. "Atualmente" é currently ou nowadays.'},
+       {id:'vo6',e:'"Pretend" significa:',o:['fingir','pretender','prender','prever'],x:'Falso cognato: pretend = fingir. "Pretender" é intend.'}]}}
+  ]},
+ {id:'log',titulo:'Lógica de Programação',area:'Tecnologia',nivel:'Intermediário',prof:'marcos',status:'publicado',
+  curta:'Variáveis, condicionais e laços em pseudocódigo.',
+  desc:'Leia trechos curtos de pseudocódigo e diga o que acontece. O foco é rastrear valores linha a linha, a habilidade que mais pesa no começo da programação.',
+  topicos:[
+   {nome:'Variáveis',material:'"x ← 5" guarda 5 em x e apaga o valor anterior. Cada linha usa o valor que a variável tem naquele momento. Para trocar dois valores, guarde um deles numa variável auxiliar.',gen:{
+    F:r=>{const a=ri(r,2,9),b=ri(r,2,9);return mk(r,'Qual o valor final de x?',a+b,[a,b,a+b+1],`x começa com ${a}; a segunda linha soma ${b} ao valor atual: ${a} + ${b} = ${a+b}.`,nfill(r,a+b),`x ← ${a}\nx ← x + ${b}`)},
+    M:r=>{const[p,q]=shuffle(r,[2,3,4,5,6,7,8,9]).slice(0,2);return mk(r,'Quais os valores finais de a e b?',`a = ${q}, b = ${q}`,[`a = ${q}, b = ${p}`,`a = ${p}, b = ${q}`,`a = ${p}, b = ${p}`],`Depois de "a ← b", a vale ${q} e o ${p} original se perdeu. Por isso "b ← a" copia ${q} de volta. Para trocar valores é preciso uma variável auxiliar.`,()=>'',`a ← ${p}\nb ← ${q}\na ← b\nb ← a`)},
+    D:r=>{const[p,q]=shuffle(r,[2,3,4,5,6,7,8,9]).slice(0,2);return mk(r,'Qual o valor final de a?',q,[p,p+q,q-p],`Passo a passo: a = ${p}+${q} = ${p+q}; b = ${p+q} − ${q} = ${p}; a = ${p+q} − ${p} = ${q}. É uma troca sem variável auxiliar.`,nfill(r,q),`a ← ${p}\nb ← ${q}\na ← a + b\nb ← a − b\na ← a − b`)}
+   }},
+   {nome:'Condicionais',material:'"se … então … senão" executa só um dos blocos. Dois "se" seguidos são independentes: o segundo testa o valor já alterado pelo primeiro.',gen:{
+    F:r=>{const n=ri(r,6,14),c=n>10?'Alto':'Baixo';return mk(r,'O que é escrito?',c,['Alto','Baixo','Alto e Baixo','Nada'],`${n} > 10 é ${n>10?'verdadeiro':'falso'}, então só o bloco ${n>10?'do "então"':'do "senão"'} executa.${n===10?' Atenção: 10 não é maior que 10.':''}`,()=>'',`n ← ${n}\nse n > 10 então\n  escreva "Alto"\nsenão\n  escreva "Baixo"`)},
+    M:r=>{const n=ri(r,3,15),par=n%2===0,res=par?n/2:3*n+1,outro=par?3*n+1:Math.floor(n/2);return mk(r,'Qual o valor final de r?',res,[outro,n,res+1],`${n} mod 2 = ${n%2}, então ${par?'n é par e r = n / 2':'n é ímpar e r = 3 × n + 1'} = ${res}.`,nfill(r,res),`n ← ${n}\nse n mod 2 = 0 então\n  r ← n / 2\nsenão\n  r ← 3 × n + 1`)},
+    D:r=>{const n=ri(r,4,12);let x=n;const passos=[];if(x>5){x-=3;passos.push(`${n} > 5, então x vira ${x}`)}else passos.push(`${n} não é maior que 5, nada muda`);const y=x;if(x>5){x-=3;passos.push(`${y} > 5, então x vira ${x}`)}else{x+=1;passos.push(`${y} não é maior que 5, então o "senão" soma 1: x = ${x}`)}return mk(r,'Qual o valor final de x?',x,[n-3,n-6,n+1,n-2],`Os dois "se" são independentes e o segundo usa o x já alterado. Primeiro: ${passos[0]}. Segundo: ${passos[1]}.`,nfill(r,x),`x ← ${n}\nse x > 5 então\n  x ← x − 3\nse x > 5 então\n  x ← x − 3\nsenão\n  x ← x + 1`)}
+   }},
+   {nome:'Laços',material:'"para i de 1 até n" repete o bloco n vezes, com i valendo 1, 2, …, n. "enquanto" repete enquanto a condição for verdadeira, então algo dentro do laço precisa mudar a condição.',gen:{
+    F:r=>{const n=ri(r,3,9);return mk(r,'Qual o valor final de s?',2*n,[n,2*n+2,2*n-2],`O laço roda ${n} vezes e soma 2 em cada uma: ${n} × 2 = ${2*n}.`,nfill(r,2*n),`s ← 0\npara i de 1 até ${n} faça\n  s ← s + 2`)},
+    M:r=>{const n=ri(r,4,10),res=n*(n+1)/2;return mk(r,'Qual o valor final de s?',res,[n*n,n*(n-1)/2,n],`s acumula 1 + 2 + … + ${n} = ${res}.`,nfill(r,res),`s ← 0\npara i de 1 até ${n} faça\n  s ← s + i`)},
+    D:r=>{const N=ri(r,20,100);let x=N,c=0;const seq=[N];while(x>1){x=Math.floor(x/2);c++;seq.push(x)}return mk(r,'Qual o valor final de c?',c,[c+1,c-1,Math.floor(N/2)],`x passa por ${seq.join(' → ')}: são ${c} divisões ("div" é a divisão inteira).`,nfill(r,c),`x ← ${N}\nc ← 0\nenquanto x > 1 faça\n  x ← x div 2\n  c ← c + 1`)}
+   }}
+  ]},
+ {id:'geo',titulo:'Geometria Plana',area:'Matemática',nivel:'Intermediário',prof:'marcos',status:'rascunho',
+  curta:'Ângulos, triângulos e áreas.',desc:'',
+  topicos:[{nome:'Ângulos',cont:{F:3,M:2,D:1}},{nome:'Triângulos',cont:{F:2,M:1,D:0}},{nome:'Áreas',cont:{F:1,M:0,D:0}}]}
+];
+const CURSO=Object.fromEntries(CURSOS.map(c=>[c.id,c]));
+const USERS={
+  ana:{nome:'Ana Souza',perfil:'aluno'},bruno:{nome:'Bruno Lima',perfil:'aluno'},carla:{nome:'Carla Mendes',perfil:'aluno'},
+  diego:{nome:'Diego Rocha',perfil:'aluno'},eduarda:{nome:'Eduarda Alves',perfil:'aluno'},
+  marcos:{nome:'Prof. Marcos Teixeira',perfil:'professor'},julia:{nome:'Profa. Júlia Campos',perfil:'professor'},
+  helena:{nome:'Helena Souza',perfil:'responsavel',vinculos:['ana']}
+};
+const CONQ=[['primeira','Primeira questão'],['topico','Primeiro tópico dominado'],['seq7','Sequência de 7 dias'],['fim','Curso concluído']];
+
+/* ============ motor adaptativo (funções puras) ============ */
+function seqAte(dias,d){let n=0;while(dias.has(d-n))n++;return n}
+function estado(st,a,cid){
+  const c=CURSO[cid],n=c.topicos.length,H=st.hist.filter(h=>h.a===a&&h.c===cid);
+  const dom=Array(n).fill(0),lib=Array(n).fill(false),dominado=Array(n).fill(false),errSeg=Array(n).fill(0);
+  lib[0]=true;let xp=0;const conq={},dias=new Set();
+  for(const h of H){
+    dom[h.t]=clamp(dom[h.t]+(h.ok?PARAM.delta.ok[h.dif]:PARAM.delta.erro[h.dif]));
+    if(h.ok){xp+=PARAM.xp[h.dif];errSeg[h.t]=0}else errSeg[h.t]++;
+    dias.add(h.day);
+    if(conq.primeira==null)conq.primeira=h.day;
+    if(!dominado[h.t]&&dom[h.t]>=PARAM.dominado){dominado[h.t]=true;if(h.t+1<n)lib[h.t+1]=true;if(conq.topico==null)conq.topico=h.day}
+    if(conq.seq7==null&&seqAte(dias,h.day)>=7)conq.seq7=h.day;
+    if(conq.fim==null&&dominado.every(Boolean))conq.fim=h.day;
+  }
+  const seq=dias.has(st.today)?seqAte(dias,st.today):dias.has(st.today-1)?seqAte(dias,st.today-1):0;
+  const nd=dominado.filter(Boolean).length,ult=H.slice(-10);
+  return{H,dom,lib,dominado,errSeg,xp,conq,seq,
+    progresso:Math.round(100*nd/n),concluido:nd===n,
+    acertos:H.length?Math.round(100*H.filter(h=>h.ok).length/H.length):null,
+    ult10:ult.length?Math.round(100*ult.filter(h=>h.ok).length/ult.length):null,
+    ultima:H.length?H[H.length-1].day:null};
+}
+function proxima(st,a,cid,r){
+  const c=CURSO[cid],e=estado(st,a,cid);
+  const cand=e.dom.map((d,i)=>({i,d})).filter(x=>e.lib[x.i]&&!e.dominado[x.i]);
+  if(!cand.length)return null;
+  cand.sort((x,y)=>x.d-y.d||x.i-y.i);
+  const t=cand[0].i,dif=faixa(e.dom[t]),top=c.topicos[t],last=e.H[e.H.length-1];
+  let q;
+  if(top.gen){
+    for(let k=0;k<6;k++){q=top.gen[dif](r);if(!last||(q.enunciado+q.codigo)!==last.key)break}
+  }else{
+    let pool=top.pool[dif];
+    if(last&&pool.length>1)pool=pool.filter(p=>p.id!==last.qid);
+    const usado=id=>{for(let i=e.H.length-1;i>=0;i--)if(e.H[i].qid===id)return i;return -1};
+    const ord=shuffle(r,pool).sort((x,y)=>usado(x.id)-usado(y.id));
+    const it=ord[0];q=mk(r,it.e,it.o[0],it.o.slice(1),it.x,()=>'');q.qid=it.id;
+  }
+  return{t,dif,q,dom:e.dom[t],cand:cand.map(x=>({nome:c.topicos[x.i].nome,d:x.d}))};
+}
+
+/* ============ dados de demonstração ============ */
+const VERSAO=3,KEY='trilha-poc';
+function registrar(st,a,cid,p,ok,day){
+  st.hist.push({a,c:cid,t:p.t,dif:p.dif,ok,day,key:p.q.enunciado+p.q.codigo,qid:p.q.qid||null,
+    txt:p.q.codigo?p.q.enunciado+' '+p.q.codigo.split('\n')[0]+'…':p.q.enunciado});
+}
+function seed(){
+  const st={v:VERSAO,today:10,hist:[],mat:[
+    ['ana','mat'],['ana','ing'],['bruno','mat'],['bruno','log'],['carla','mat'],['diego','mat'],['diego','log'],['eduarda','mat'],['eduarda','ing']]};
+  const r=mulberry32(42),pen={F:0,M:.08,D:.15};
+  const sim=(a,cid,dias,porDia,p)=>{for(const day of dias)for(let k=0;k<porDia;k++){const x=proxima(st,a,cid,r);if(!x)return;registrar(st,a,cid,x,r()<p-pen[x.dif],day)}};
+  sim('ana','mat',[6,7,8,9],3,.72);
+  sim('bruno','mat',[3,4,5,6,7,8,9],3,.8);sim('bruno','log',[5,6,7,8,9],3,.72);
+  sim('carla','mat',[5,7,9],5,.3);
+  sim('diego','mat',[7,8,9],4,.62);sim('diego','log',[8,9],4,.4);
+  sim('eduarda','mat',[2,3,4,5,6,7,8,9],5,.92);sim('eduarda','ing',[8,9],3,.8);
+  return st;
+}
+let st;
+try{const s=JSON.parse(localStorage.getItem(KEY));st=s&&s.v===VERSAO?s:seed()}catch(e){st=seed()}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+
+const ui={role:'aluno',view:'trilha',curso:'mat',det:null,atual:null,fb:null,filtro:{q:'',area:'',nivel:''},profCurso:'mat',profAluno:null};
+const ALUNO='ana',PROF='marcos',RESP='helena';
+const matriculado=(a,cid)=>st.mat.some(m=>m[0]===a&&m[1]===cid);
+const meus=a=>st.mat.filter(m=>m[0]===a).map(m=>m[1]);
+
+/* ============ componentes ============ */
+const dbar=(d,done)=>`<div class="dbar${done?' done':''}" role="img" aria-label="Domínio ${d} de 100"><span class="z z1"></span><span class="z z2"></span><span class="z z3"></span><span class="fill" style="width:${d}%"></span><span class="m80"></span></div>`;
+const pbar=(p)=>`<div class="pbar${p===100?' done':''}" role="img" aria-label="Progresso ${p}%"><span style="width:${p}%"></span></div>`;
+const legend=()=>`<div class="legend"><span><i style="background:var(--z1);border:1px solid var(--line)"></i>Fácil 0–39</span><span><i style="background:var(--z2);border:1px solid var(--line)"></i>Médio 40–69</span><span><i style="background:var(--z3);border:1px solid var(--line)"></i>Difícil 70–100</span><span>┆ dominado em 80</span></div>`;
+
+function header(){
+  const r=[['aluno','Aluna · Ana'],['prof','Professor · Marcos'],['resp','Responsável · Helena']];
+  return `<header class="top"><div class="wrap top-in">
+  <div class="brand"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><div><strong>Trilha</strong><small>Prova de conceito · dados fictícios</small></div></div>
+  <nav class="seg" aria-label="Ver como">${r.map(([k,l])=>`<button data-act="role" data-v="${k}" aria-pressed="${ui.role===k}">${l}</button>`).join('')}</nav>
+  <div class="dia"><span class="label">Dia virtual</span><b>${fmtDia(st.today)}</b>
+   <button class="btn sm" data-act="dia">Simular próximo dia</button>
+   <button class="btn sm ghost" data-act="reset">Restaurar dados</button></div>
+  </div></header>`;
+}
+
+/* ---- aluno ---- */
+function aluno(){
+  const cs=meus(ALUNO);
+  const strip=`<div class="strip">${cs.map(cid=>{const e=estado(st,ALUNO,cid),c=CURSO[cid];
+    return `<button class="ccard" data-act="curso" data-v="${cid}" aria-current="${ui.view==='trilha'&&ui.curso===cid}">
+      <span class="row"><strong>${esc(c.titulo)}</strong><span class="mono muted">${e.progresso}%</span></span>${pbar(e.progresso)}
+      <span class="row muted" style="font-size:.8rem"><span>${e.xp} XP</span><span>${e.seq} ${e.seq===1?'dia':'dias'} seguidos</span></span></button>`}).join('')}
+    <button class="ccard add" data-act="view" data-v="catalogo" aria-current="${ui.view!=='trilha'}">+ Catálogo de cursos</button></div>`;
+  return strip+(ui.view==='trilha'?trilha():ui.view==='catalogo'?catalogo():detalhe());
+}
+
+function trilha(){
+  const cid=ui.curso,c=CURSO[cid],e=estado(st,ALUNO,cid);
+  if(!ui.atual&&!ui.fb)ui.atual=proxima(st,ALUNO,cid,Math.random);
+  let main;
+  if(!ui.atual&&e.concluido){
+    main=`<div class="panel done-card"><span class="label">Curso concluído</span><div class="big">100%</div><p>Você dominou todos os tópicos de ${esc(c.titulo)}.</p><p class="muted mono">${e.xp} XP · ${e.H.length} questões · ${e.acertos}% de acertos</p></div>`;
+  }else{
+    const a=ui.atual,q=a.q,fb=ui.fb;
+    main=`<div class="panel"><div class="qmeta"><span class="tag">${esc(c.topicos[a.t].nome)}</span><span class="dif dif-${a.dif}">${DIF[a.dif]}</span><span class="muted mono" style="margin-left:auto;font-size:.8rem">questão ${e.H.length+(fb?0:1)} neste curso</span></div>
+      <h2 class="enun">${esc(q.enunciado)}</h2>${q.codigo?`<pre class="code">${esc(q.codigo)}</pre>`:''}
+      <div class="ops">${q.opcoes.map((o,i)=>{let cl='';if(fb){if(i===q.correta)cl=' certa';else if(i===fb.idx)cl=' errada'}
+        return `<button class="op${cl}" data-act="resp" data-v="${i}"${fb?' disabled':''}><span class="k">${'ABCD'[i]}</span><span>${esc(o)}</span></button>`}).join('')}</div>
+      ${fb?feedback(c,a,fb):''}
+      <div class="porque"><b>Por que esta questão?</b> Tópicos liberados e ainda não dominados: ${a.cand.map(x=>`${esc(x.nome)} (${x.d})`).join(', ')}. O motor escolhe o de menor domínio, <b>${esc(c.topicos[a.t].nome)}</b>. Domínio ${a.dom} cai na faixa ${a.dif==='F'?'0–39':a.dif==='M'?'40–69':'70–100'}, então a questão é <b>${DIF[a.dif]}</b>.</div></div>`;
+  }
+  const side=`<aside class="side">
+    <div class="panel stack"><div class="head-row"><h3>${esc(c.titulo)}</h3><span class="muted" style="font-size:.8rem">${esc(USERS[c.prof].nome)}</span></div>
+      <div class="stats"><div class="stat xp"><span class="label">XP</span><b>${e.xp}</b></div><div class="stat"><span class="label">Sequência</span><b>${e.seq}d</b></div><div class="stat"><span class="label">Progresso</span><b>${e.progresso}%</b></div></div>
+      <ul class="conqs">${CONQ.map(([k,l])=>`<li class="${e.conq[k]!=null?'on':''}"><b>${l}</b><small>${e.conq[k]!=null?'em '+fmtDia(e.conq[k]):'ainda não'}</small></li>`).join('')}</ul></div>
+    <div class="panel stack"><h3>Trilha do curso</h3>
+      <ol class="tops">${c.topicos.map((t,i)=>{const s=e.dominado[i]?'dom':e.lib[i]?'on':'lock';
+        return `<li class="${s==='lock'?'lock':''}"><div class="h"><span>${esc(t.nome)}</span><span><span class="est ${s}">${s==='dom'?'Dominado':s==='on'?'Em estudo':'Bloqueado'}</span> <span class="mono">${e.dom[i]}</span></span></div>${dbar(e.dom[i],e.dominado[i])}</li>`}).join('')}</ol>
+      ${legend()}</div></aside>`;
+  return `<div class="trilha"><section>${main}</section>${side}</div>${motor()}`;
+}
+
+function feedback(c,a,fb){
+  const q=a.q,top=c.topicos[a.t];
+  return `<div class="fb ${fb.ok?'ok':'erro'}" role="status"><span class="titulo">${fb.ok?'Acertou!':'Não foi dessa vez.'}</span>
+    ${fb.ok?'':`<p>Resposta correta: <b>${esc(q.opcoes[q.correta])}</b></p>`}
+    <p>${esc(q.explicacao)}</p>
+    <div class="chips"><span class="chip mono">Domínio em ${esc(top.nome)}: ${fb.antes} → ${fb.depois} (${fb.depois-fb.antes>=0?'+':''}${fb.depois-fb.antes})</span>
+      ${fb.ok?`<span class="chip xp">+${PARAM.xp[a.dif]} XP</span>`:''}
+      ${fb.desbloq?`<span class="chip un">${esc(top.nome)} dominado · ${fb.desbloq} liberado</span>`:''}
+      ${fb.conq.map(k=>`<span class="chip xp">Conquista: ${CONQ.find(x=>x[0]===k)[1]}</span>`).join('')}</div>
+    ${fb.revisao?`<div class="revisao"><strong>Dois erros seguidos em ${esc(top.nome)}. Que tal revisar antes de continuar?</strong><p>${esc(top.material)}</p></div>`:''}
+    <div class="fb-actions"><button class="btn" data-act="prox">${fb.revisao?'Revisei, continuar':'Próxima questão'}</button></div></div>`;
+}
+
+function motor(){
+  const t=PARAM.delta;
+  return `<details class="motor"><summary>Regras do motor adaptativo</summary><div class="motor-in">
+   <div><span class="label">Variação do domínio por resposta</span><div class="tbl-wrap"><table><thead><tr><th></th><th class="n">Fácil</th><th class="n">Médio</th><th class="n">Difícil</th></tr></thead>
+    <tbody><tr><td>Acerto</td><td class="n">+${t.ok.F}</td><td class="n">+${t.ok.M}</td><td class="n">+${t.ok.D}</td></tr>
+    <tr><td>Erro</td><td class="n">${t.erro.F}</td><td class="n">${t.erro.M}</td><td class="n">${t.erro.D}</td></tr>
+    <tr><td>XP no acerto</td><td class="n">${PARAM.xp.F}</td><td class="n">${PARAM.xp.M}</td><td class="n">${PARAM.xp.D}</td></tr></tbody></table></div></div>
+   <div><span class="label">Decisões</span><ul>
+    <li>Domínio de 0 a 100 por tópico, separado por aluno e curso.</li>
+    <li>Próxima questão: tópico liberado e não dominado com menor domínio.</li>
+    <li>Dificuldade pela faixa: 0–39 Fácil, 40–69 Médio, 70–100 Difícil.</li>
+    <li>Domínio ≥ 80 marca o tópico como dominado e libera o seguinte.</li>
+    <li>Dois erros seguidos no tópico sugerem revisão do material.</li>
+    <li>XP, sequência e conquistas são recalculados do histórico.</li></ul></div>
+  </div></details>`;
+}
+
+function catalogo(){
+  const areas=[...new Set(CURSOS.filter(c=>c.status==='publicado').map(c=>c.area))],nivs=[...new Set(CURSOS.filter(c=>c.status==='publicado').map(c=>c.nivel))];
+  const f=ui.filtro;
+  return `<section class="stack"><h1>Catálogo de cursos</h1>
+   <div class="filtros"><label for="fq">Buscar pelo título<input id="fq" type="search" value="${esc(f.q)}" placeholder="Ex.: inglês"></label>
+    <label for="fa">Área<select id="fa"><option value="">Todas</option>${areas.map(a=>`<option${f.area===a?' selected':''}>${a}</option>`).join('')}</select></label>
+    <label for="fn">Nível<select id="fn"><option value="">Todos</option>${nivs.map(a=>`<option${f.nivel===a?' selected':''}>${a}</option>`).join('')}</select></label></div>
+   <div id="catLista">${catLista()}</div></section>`;
+}
+function catLista(){
+  const f=ui.filtro,norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  const L=CURSOS.filter(c=>c.status==='publicado'&&norm(c.titulo).includes(norm(f.q))&&(!f.area||c.area===f.area)&&(!f.nivel||c.nivel===f.nivel));
+  if(!L.length)return `<div class="empty">Nenhum curso encontrado. Tente outro termo ou limpe os filtros.</div>`;
+  return `<div class="cat">${L.map(c=>`<div class="panel"><h3>${esc(c.titulo)}</h3><p>${esc(c.curta)}</p>
+    <div class="meta"><span class="tag">${c.area}</span><span class="tag">${c.nivel}</span><span class="tag">${c.topicos.length} tópicos</span>${matriculado(ALUNO,c.id)?'<span class="chip un">Matriculada</span>':''}</div>
+    <div><button class="btn sm ghost" data-act="det" data-v="${c.id}">Ver detalhes</button></div></div>`).join('')}</div>`;
+}
+function detalhe(){
+  const c=CURSO[ui.det],m=matriculado(ALUNO,c.id);
+  return `<section class="stack"><div><button class="back" data-act="view" data-v="catalogo">← Voltar ao catálogo</button></div>
+   <div class="detalhe"><div class="panel stack"><h1>${esc(c.titulo)}</h1><p style="margin:0">${esc(c.desc)}</p>
+     <div class="meta"><span class="tag">${c.area}</span><span class="tag">${c.nivel}</span></div>
+     <div><span class="label">Tópicos, na ordem de liberação</span><ol>${c.topicos.map(t=>`<li>${esc(t.nome)}</li>`).join('')}</ol></div></div>
+    <div class="panel stack"><span class="label">Professor</span><b>${esc(USERS[c.prof].nome)}</b>
+     ${m?`<p class="note">Você já está matriculada. Sua trilha continua de onde parou.</p><button class="btn" data-act="curso" data-v="${c.id}">Continuar</button>`
+        :`<p class="note">A matrícula cria uma trilha nova só para este curso, com o primeiro tópico liberado.</p><button class="btn" data-act="matr" data-v="${c.id}">Matricular</button>`}</div></div></section>`;
+}
+
+/* ---- professor ---- */
+function prof(){
+  const cs=CURSOS.filter(c=>c.prof===PROF),c=CURSO[ui.profCurso];
+  const tabs=`<div class="tabs">${cs.map(x=>`<button data-act="pc" data-v="${x.id}" aria-pressed="${x.id===c.id}">${esc(x.titulo)}${x.status==='rascunho'?' · rascunho':''}</button>`).join('')}</div>`;
+  let body;
+  if(c.status==='rascunho'){
+    const faltam=c.topicos.flatMap(t=>['F','M','D'].filter(d=>!t.cont[d]).map(d=>`${t.nome}: ${DIF[d]}`));
+    body=`<div class="panel stack" style="max-width:640px"><h2>${esc(c.titulo)} ainda é rascunho</h2>
+     <p class="note">Rascunhos não aparecem no catálogo. Para publicar, cada tópico precisa de pelo menos uma questão de cada nível.</p>
+     <ul class="check">${c.topicos.map(t=>`<li><b>${esc(t.nome)}</b><span class="lvl">${['F','M','D'].map(d=>`<span class="${t.cont[d]?'':'zero'}">${DIF[d]} ${t.cont[d]}</span>`).join('')}</span></li>`).join('')}</ul>
+     <p class="note"><b style="color:var(--bad)">Faltam:</b> ${faltam.join(' · ')}</p>
+     <div><button class="btn" disabled>Publicar curso</button></div></div>`;
+  }else{
+    const al=st.mat.filter(m=>m[1]===c.id).map(m=>({id:m[0],e:estado(st,m[0],c.id)}));
+    const rows=al.map(({id,e})=>{const flag=e.ult10!=null&&e.ult10<50;
+      return `<tr class="${ui.profAluno===id?'sel':''}"><td><button class="linkbtn" data-act="pa" data-v="${id}">${esc(USERS[id].nome)}</button>${flag?'<span class="flag">precisa de atenção</span>':''}</td>
+       <td><div class="mini">${pbar(e.progresso)}<span class="mono">${e.progresso}%</span></div></td>
+       <td class="n">${e.acertos??'–'}${e.acertos!=null?'%':''}</td><td class="n">${e.ult10??'–'}${e.ult10!=null?'%':''}</td><td class="n">${e.xp}</td>
+       <td>${e.ultima!=null?fmtDia(e.ultima):'–'}</td></tr>`}).join('');
+    const medio=c.topicos.map((t,i)=>Math.round(al.reduce((s,x)=>s+x.e.dom[i],0)/(al.length||1)));
+    body=`<div class="prof-grid"><div class="panel stack"><div class="head-row"><h2>Turma</h2><span class="muted">${al.length} alunos</span></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Aluno</th><th>Progresso</th><th class="n">Acertos</th><th class="n">Últimas 10</th><th class="n">XP</th><th>Última atividade</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="note">"Precisa de atenção" marca quem acertou menos de 50% das últimas 10 respostas neste curso.</p></div>
+     <div class="stack">
+      <div class="panel stack"><h3>Domínio médio da turma</h3><ol class="tops">${c.topicos.map((t,i)=>`<li><div class="h"><span>${esc(t.nome)}</span><span class="mono">${medio[i]}</span></div>${dbar(medio[i],medio[i]>=80)}</li>`).join('')}</ol>${legend()}</div>
+      ${ui.profAluno&&al.find(x=>x.id===ui.profAluno)?alunoDet(c,ui.profAluno):`<div class="panel"><p class="note">Clique no nome de um aluno para ver o domínio por tópico e as respostas recentes.</p></div>`}
+     </div></div>`;
+  }
+  return `<div class="head-row"><h1>Painel do professor</h1>${tabs}</div>${body}`;
+}
+function alunoDet(c,id){
+  const e=estado(st,id,c.id),rec=e.H.slice(-8).reverse();
+  return `<div class="panel stack"><div class="head-row"><h3>${esc(USERS[id].nome)}</h3><button class="btn sm ghost" data-act="pa" data-v="">Fechar</button></div>
+   <ol class="tops">${c.topicos.map((t,i)=>`<li class="${e.lib[i]?'':'lock'}"><div class="h"><span>${esc(t.nome)}</span><span class="mono">${e.dom[i]}</span></div>${dbar(e.dom[i],e.dominado[i])}</li>`).join('')}</ol>
+   <span class="label">Respostas recentes</span>
+   ${rec.length?`<div class="tbl-wrap"><table><tbody>${rec.map(h=>`<tr><td>${fmtDia(h.day)}</td><td>${esc(c.topicos[h.t].nome)}</td><td><span class="dif dif-${h.dif}">${DIF[h.dif]}</span></td><td><span class="pill ${h.ok?'ok':'erro'}">${h.ok?'Acertou':'Errou'}</span></td></tr>`).join('')}</tbody></table></div>`:'<p class="note">Nenhuma resposta ainda.</p>'}</div>`;
+}
+
+/* ---- responsável ---- */
+function resp(){
+  const u=USERS[RESP];
+  return `<div class="head-row"><h1>Acompanhamento</h1><span class="muted">${esc(u.nome)}</span></div>
+   ${u.vinculos.map(a=>`<div class="panel stack"><h2>${esc(USERS[a].nome)}</h2>
+    <div class="tbl-wrap"><table><thead><tr><th>Curso</th><th>Progresso</th><th class="n">Sequência</th><th class="n">XP</th><th>Última atividade</th></tr></thead><tbody>
+    ${meus(a).map(cid=>{const e=estado(st,a,cid);return `<tr><td><b>${esc(CURSO[cid].titulo)}</b></td><td><div class="mini">${pbar(e.progresso)}<span class="mono">${e.progresso}%</span></div></td><td class="n">${e.seq} ${e.seq===1?'dia':'dias'}</td><td class="n">${e.xp}</td><td>${e.ultima!=null?fmtDia(e.ultima):'sem atividade'}</td></tr>`}).join('')}
+    </tbody></table></div></div>`).join('')}
+   <p class="note">Helena está vinculada apenas a Ana. Os outros alunos da turma não aparecem para ela.</p>`;
+}
+
+/* ============ render e eventos ============ */
+const $app=document.getElementById('app');
+function render(){
+  $app.innerHTML=header()+`<main class="wrap">${ui.role==='aluno'?aluno():ui.role==='prof'?prof():resp()}</main>
+  <footer class="wrap">Prova de conceito da EdTech adaptativa por curso. Os dados são fictícios e ficam salvos só neste navegador.</footer>`;
+}
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest('[data-act]');if(!b||b.disabled)return;
+  const v=b.dataset.v;
+  switch(b.dataset.act){
+    case 'role':ui.role=v;break;
+    case 'view':ui.view=v;break;
+    case 'curso':ui.view='trilha';if(ui.curso!==v){ui.curso=v;ui.atual=null;ui.fb=null}break;
+    case 'det':ui.view='det';ui.det=v;break;
+    case 'matr':if(!matriculado(ALUNO,v))st.mat.push([ALUNO,v]);save();ui.view='trilha';ui.curso=v;ui.atual=null;ui.fb=null;break;
+    case 'resp':{
+      const a=ui.atual,i=+v,ok=i===a.q.correta,antes=estado(st,ALUNO,ui.curso);
+      registrar(st,ALUNO,ui.curso,a,ok,st.today);save();
+      const dep=estado(st,ALUNO,ui.curso),c=CURSO[ui.curso];
+      ui.fb={idx:i,ok,antes:antes.dom[a.t],depois:dep.dom[a.t],
+        desbloq:!antes.dominado[a.t]&&dep.dominado[a.t]?(c.topicos[a.t+1]?c.topicos[a.t+1].nome:'conclusão do curso'):null,
+        conq:CONQ.map(x=>x[0]).filter(k=>antes.conq[k]==null&&dep.conq[k]!=null),
+        revisao:!ok&&dep.errSeg[a.t]>=2};
+      break;}
+    case 'prox':ui.fb=null;ui.atual=null;break;
+    case 'dia':st.today++;save();break;
+    case 'reset':st=seed();save();Object.assign(ui,{view:'trilha',curso:'mat',atual:null,fb:null,profAluno:null});break;
+    case 'pc':ui.profCurso=v;ui.profAluno=null;break;
+    case 'pa':ui.profAluno=v||null;break;
+    default:return;
+  }
+  render();
+  if(['role','view','curso','det','matr'].includes(b.dataset.act))window.scrollTo({top:0});
+});
+document.addEventListener('input',ev=>{
+  const id=ev.target.id;if(!['fq','fa','fn'].includes(id))return;
+  ui.filtro={q:document.getElementById('fq').value,area:document.getElementById('fa').value,nivel:document.getElementById('fn').value};
+  document.getElementById('catLista').innerHTML=catLista();
+});
+render();
+</script>
+</body>
+</html>
