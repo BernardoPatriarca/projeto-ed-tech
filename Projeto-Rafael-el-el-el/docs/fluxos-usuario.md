@@ -1,0 +1,220 @@
+# Fluxos de Usuário
+
+Jornadas por perfil e diagramas de atividade/sequência dos fluxos principais. Os IDs entre parênteses referem-se a [requisitos.md](requisitos.md) e [casos-de-uso.md](casos-de-uso.md).
+
+## 1. Jornadas por perfil
+
+### Aluno
+```mermaid
+journey
+    title Jornada do Aluno
+    section Descoberta
+      Entrar como aluno: 4: Aluno
+      Buscar e filtrar cursos: 4: Aluno
+      Ver detalhe do curso: 4: Aluno
+    section Início
+      Matricular-se: 5: Aluno
+      Abrir trilha do curso: 4: Aluno
+    section Estudo
+      Responder questões adaptadas: 4: Aluno
+      Receber feedback e explicação: 5: Aluno
+      Revisar materiais após erros: 3: Aluno
+      Dominar tópico e desbloquear o próximo: 5: Aluno
+    section Evolução
+      Ganhar XP e conquistas: 5: Aluno
+      Consultar painel de desempenho: 4: Aluno
+```
+
+### Professor
+```mermaid
+journey
+    title Jornada do Professor
+    section Conteúdo
+      Criar curso (rascunho): 4: Professor
+      Organizar tópicos e materiais: 3: Professor
+      Cadastrar questões por dificuldade: 3: Professor
+      Publicar curso: 5: Professor
+    section Acompanhamento
+      Ver painel da turma: 4: Professor
+      Identificar alunos com dificuldade: 5: Professor
+      Ver detalhe de um aluno: 4: Professor
+```
+
+### Responsável
+```mermaid
+journey
+    title Jornada do Responsável
+    section Acompanhamento
+      Entrar como responsável: 4: Responsável
+      Ver alunos vinculados: 5: Responsável
+      Conferir progresso e sequência: 4: Responsável
+      Ver última atividade: 4: Responsável
+```
+
+### Administrador
+```mermaid
+journey
+    title Jornada do Administrador
+    section Gestão
+      Ver visão geral da plataforma: 4: Admin
+      Criar e editar usuários: 4: Admin
+      Desativar usuário: 3: Admin
+      Vincular responsável a aluno: 4: Admin
+      Vincular professor a curso: 4: Admin
+```
+
+## 2. Matrícula em curso (UC02, UC03 — RF06–RF10)
+
+```mermaid
+flowchart TD
+    I([Início]) --> C[Aluno abre o catálogo]
+    C --> F{Busca ou filtro?}
+    F -- Sim --> B[Aplicar busca / filtros]
+    B --> R{Há resultados?}
+    R -- Não --> V[Exibir 'Nenhum curso encontrado'] --> F
+    R -- Sim --> L
+    F -- Não --> L[Lista de cursos publicados]
+    L --> D[Abrir detalhe do curso]
+    D --> M{Já matriculado?}
+    M -- Sim --> CO[Ação 'Continuar'] --> T[Abrir trilha do curso]
+    M -- Não --> MA[Ação 'Matricular']
+    MA --> CR[Criar matrícula e trilha nova<br/>domínio 0 em todos os tópicos<br/>1º tópico desbloqueado]
+    CR --> MC[Curso aparece em 'Meus cursos' com 0%]
+    MC --> T
+    T --> FIM([Fim])
+```
+
+## 3. Sessão adaptativa (UC04, UC05, UC06 — RF17–RF28)
+
+### Atividade
+```mermaid
+flowchart TD
+    I([Aluno abre a trilha]) --> P[Pedir próxima atividade]
+    P --> S[Selecionar tópico desbloqueado<br/>não dominado de menor domínio]
+    S --> D[Dificuldade pela faixa:<br/>0–39 Fácil · 40–69 Médio · 70–100 Difícil]
+    D --> Q[Escolher questão da dificuldade<br/>evitando repetir a última]
+    Q --> RESP[Aluno responde]
+    RESP --> OK{Acertou?}
+    OK -- Sim --> UP[Domínio + 10/15/20<br/>XP + 10/20/30]
+    OK -- Não --> DOWN[Domínio − 15/10/5<br/>limitado a 0]
+    UP --> FB[Feedback: resultado, alternativa correta,<br/>explicação, variação de domínio]
+    DOWN --> FB
+    FB --> E2{2 erros seguidos<br/>no tópico?}
+    E2 -- Sim --> REV[Sugerir revisão dos materiais]
+    REV --> RV{Aluno revisa?}
+    RV -- Sim --> MAT[Abrir materiais do tópico] --> P
+    RV -- Não --> DOM
+    E2 -- Não --> DOM{Domínio ≥ 80?}
+    DOM -- Não --> P
+    DOM -- Sim --> MARK[Marcar tópico dominado<br/>desbloquear o próximo<br/>verificar conquistas]
+    MARK --> ALL{Todos os tópicos<br/>dominados?}
+    ALL -- Não --> P
+    ALL -- Sim --> FIM([Curso concluído · 100%<br/>conquista 'Curso concluído'])
+```
+
+### Sequência
+```mermaid
+sequenceDiagram
+    actor A as Aluno
+    participant UI as Tela da trilha
+    participant M as Motor adaptativo
+    participant G as Gamificação
+    participant DB as Repositório (aluno+curso)
+
+    A->>UI: Próxima atividade
+    UI->>DB: Carregar estado do par aluno+curso
+    DB-->>UI: Domínio por tópico, histórico
+    UI->>M: proximaQuestao(estado, curso)
+    M-->>UI: Questão (tópico, dificuldade)
+    A->>UI: Responde alternativa
+    UI->>M: atualizarDominio(estado, questão, acertou)
+    M->>M: Aplicar limites 0–100 e desbloqueios
+    M-->>UI: Novo estado + variação
+    UI->>DB: Salvar resposta e novo estado
+    UI->>G: Calcular XP, sequência e conquistas (histórico do curso)
+    G-->>UI: Indicadores + conquistas novas
+    UI-->>A: Feedback, explicação, domínio, XP
+    opt 2 erros seguidos no tópico
+        UI-->>A: Sugerir revisão dos materiais
+    end
+```
+
+## 4. Criação e publicação de curso (UC08–UC11 — RF11–RF16)
+
+```mermaid
+flowchart TD
+    I([Professor na sua área]) --> N[Novo curso]
+    N --> DADOS[Preencher título, descrição, área, nível]
+    DADOS --> VT{Título preenchido?}
+    VT -- Não --> ERR1[Indicar campo obrigatório] --> DADOS
+    VT -- Sim --> RAS[Salvar como 'rascunho']
+    RAS --> TOP[Adicionar / ordenar tópicos]
+    TOP --> MAT[Anexar materiais por tópico]
+    MAT --> QUE[Cadastrar questão:<br/>enunciado, alternativas, correta,<br/>explicação, dificuldade]
+    QUE --> VC{Alternativa correta<br/>marcada?}
+    VC -- Não --> ERR2[Informar que é preciso marcar] --> QUE
+    VC -- Sim --> MAIS{Mais questões?}
+    MAIS -- Sim --> QUE
+    MAIS -- Não --> PUB[Acionar 'Publicar']
+    PUB --> COB{Cada tópico tem<br/>Fácil, Médio e Difícil?}
+    COB -- Não --> FALT[Listar tópicos e níveis faltantes] --> QUE
+    COB -- Sim --> OK[Status 'publicado'<br/>curso aparece no catálogo]
+    OK --> FIM([Fim])
+```
+
+```mermaid
+sequenceDiagram
+    actor P as Professor
+    participant UI as Editor de curso
+    participant DB as Repositório
+
+    P->>UI: Abrir edição do curso
+    UI->>DB: Verificar vínculo professor↔curso
+    alt Sem vínculo
+        DB-->>UI: Negado
+        UI-->>P: Edição não permitida
+    else Vinculado
+        DB-->>UI: Curso, tópicos, questões
+        P->>UI: Publicar
+        UI->>UI: Validar cobertura de níveis por tópico
+        alt Cobertura incompleta
+            UI-->>P: Lista de faltantes
+        else Completa
+            UI->>DB: status = publicado
+            UI-->>P: Curso publicado
+        end
+    end
+```
+
+## 5. Acompanhamento pelo professor (UC12 — RF30–RF32)
+
+```mermaid
+flowchart TD
+    I([Professor]) --> C[Escolher curso vinculado]
+    C --> PN[Painel da turma:<br/>alunos, progresso, taxa de acertos,<br/>domínio médio por tópico]
+    PN --> AT{Aluno com &lt; 50% de acertos<br/>nas últimas 10 respostas?}
+    AT -- Sim --> DEST[Destacar 'precisa de atenção']
+    AT -- Não --> NORM[Exibir normalmente]
+    DEST --> SEL[Selecionar aluno]
+    NORM --> SEL
+    SEL --> DET[Detalhe: domínio por tópico<br/>e respostas recentes no curso]
+    DET --> FIM([Fim])
+```
+
+## 6. Acompanhamento pelo responsável (UC16 — RF33)
+
+```mermaid
+sequenceDiagram
+    actor R as Responsável
+    participant UI as Painel do responsável
+    participant DB as Repositório
+
+    R->>UI: Abrir painel
+    UI->>DB: Buscar alunos vinculados ao responsável
+    DB-->>UI: Somente alunos vinculados
+    loop Para cada aluno vinculado
+        UI->>DB: Matrículas e histórico
+        DB-->>UI: Cursos, progresso, sequência, última atividade
+    end
+    UI-->>R: Cards por aluno com seus cursos
+```

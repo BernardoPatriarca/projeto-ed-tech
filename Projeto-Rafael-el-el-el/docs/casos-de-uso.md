@@ -1,0 +1,157 @@
+# Casos de Uso
+
+> **Convenção visual:** o Mermaid não possui diagrama de casos de uso UML nativo. Usamos `flowchart`:
+> atores são retângulos com 👤 à esquerda; casos de uso são elipses `([ ])` agrupadas pela fronteira do
+> sistema (`subgraph`); setas sólidas ligam ator → caso de uso; setas pontilhadas rotuladas
+> representam `<<include>>` e `<<extend>>`.
+
+## Diagrama geral
+
+```mermaid
+flowchart LR
+    A["👤 Aluno"]
+    P["👤 Professor"]
+    AD["👤 Administrador"]
+    R["👤 Responsável"]
+
+    subgraph SIS["Plataforma EdTech Adaptativa"]
+        direction TB
+        UC01(["UC01 Entrar / trocar usuário"])
+        UC02(["UC02 Explorar catálogo"])
+        UC03(["UC03 Matricular-se em curso"])
+        UC04(["UC04 Estudar na trilha adaptativa"])
+        UC05(["UC05 Responder questão"])
+        UC06(["UC06 Revisar materiais do tópico"])
+        UC07(["UC07 Ver desempenho e conquistas"])
+        UC08(["UC08 Criar / editar curso"])
+        UC09(["UC09 Gerenciar tópicos e materiais"])
+        UC10(["UC10 Gerenciar banco de questões"])
+        UC11(["UC11 Publicar curso"])
+        UC12(["UC12 Acompanhar turma"])
+        UC13(["UC13 Gerenciar usuários"])
+        UC14(["UC14 Gerenciar vínculos"])
+        UC15(["UC15 Ver visão geral da plataforma"])
+        UC16(["UC16 Acompanhar alunos vinculados"])
+    end
+
+    A --> UC01
+    A --> UC02
+    A --> UC03
+    A --> UC04
+    A --> UC07
+    P --> UC01
+    P --> UC08
+    P --> UC09
+    P --> UC10
+    P --> UC11
+    P --> UC12
+    AD --> UC01
+    AD --> UC13
+    AD --> UC14
+    AD --> UC15
+    AD --> UC08
+    R --> UC01
+    R --> UC16
+
+    UC04 -. "«include»" .-> UC05
+    UC06 -. "«extend» 2 erros seguidos" .-> UC04
+    UC03 -. "«extend» a partir do detalhe" .-> UC02
+    UC11 -. "«include» validar cobertura" .-> UC10
+```
+
+## Matriz ator × caso de uso
+
+| Caso de uso | Aluno | Professor | Admin | Responsável |
+|-------------|:-----:|:---------:|:-----:|:-----------:|
+| UC01 Entrar / trocar usuário | ✔ | ✔ | ✔ | ✔ |
+| UC02 Explorar catálogo | ✔ | | | |
+| UC03 Matricular-se em curso | ✔ | | | |
+| UC04 Estudar na trilha adaptativa | ✔ | | | |
+| UC05 Responder questão | ✔ | | | |
+| UC06 Revisar materiais do tópico | ✔ | | | |
+| UC07 Ver desempenho e conquistas | ✔ | | | |
+| UC08 Criar / editar curso | | ✔ (vinculados) | ✔ (todos) | |
+| UC09 Gerenciar tópicos e materiais | | ✔ | ✔ | |
+| UC10 Gerenciar banco de questões | | ✔ | ✔ | |
+| UC11 Publicar curso | | ✔ | ✔ | |
+| UC12 Acompanhar turma | | ✔ | | |
+| UC13 Gerenciar usuários | | | ✔ | |
+| UC14 Gerenciar vínculos | | | ✔ | |
+| UC15 Ver visão geral | | | ✔ | |
+| UC16 Acompanhar alunos vinculados | | | | ✔ |
+
+## Descrição dos casos de uso principais
+
+### UC01 — Entrar / trocar usuário (RF01–RF03)
+- **Ator:** qualquer perfil.
+- **Pré-condição:** usuário ativo cadastrado (no protótipo, usuário de demonstração).
+- **Fluxo principal:**
+  1. O usuário abre a tela de entrada.
+  2. O sistema lista os usuários de demonstração ativos, agrupados por perfil.
+  3. O usuário escolhe um usuário.
+  4. O sistema abre a área inicial do perfil.
+- **Fluxos alternativos:**
+  - **A1 — Sair:** o usuário aciona "Sair"; o sistema volta à tela de entrada.
+  - **A2 — Acesso indevido:** o usuário acessa o endereço de outra área; o sistema redireciona para a área do seu perfil.
+
+### UC03 — Matricular-se em curso (RF08–RF10)
+- **Ator:** Aluno.
+- **Pré-condição:** curso publicado; aluno ainda não matriculado.
+- **Fluxo principal:**
+  1. O Aluno abre o detalhe de um curso pelo catálogo (UC02).
+  2. O Aluno aciona "Matricular".
+  3. O sistema cria a matrícula e uma trilha nova com o 1º tópico desbloqueado e domínio 0 em todos os tópicos.
+  4. O curso aparece em "Meus cursos" com progresso 0%.
+- **Fluxos alternativos:**
+  - **A1 — Já matriculado:** o detalhe exibe "Continuar" e leva à trilha (UC04).
+
+### UC04 — Estudar na trilha adaptativa (RF17–RF24, RF25–RF28)
+- **Ator:** Aluno.
+- **Pré-condição:** aluno matriculado no curso.
+- **Fluxo principal:**
+  1. O Aluno abre a trilha do curso; o sistema exibe tópicos (bloqueado / desbloqueado / dominado), progresso, XP, sequência e conquistas.
+  2. O Aluno aciona "Próxima atividade".
+  3. O sistema seleciona o tópico desbloqueado não dominado de menor domínio e uma questão na dificuldade da faixa do domínio.
+  4. O Aluno responde (UC05).
+  5. O sistema exibe feedback (acerto/erro, alternativa correta, explicação, variação de domínio e XP ganho).
+  6. Repete a partir do passo 2.
+- **Fluxos alternativos:**
+  - **A1 — Tópico dominado (domínio ≥ 80):** o sistema marca o tópico como dominado, desbloqueia o seguinte e concede conquista se for o primeiro.
+  - **A2 — Dois erros seguidos no tópico:** o sistema sugere revisão (UC06); o Aluno pode revisar ou continuar.
+  - **A3 — Todos os tópicos dominados:** o sistema marca o curso como concluído (100%) e concede a conquista "Curso concluído".
+
+### UC08/UC11 — Criar e publicar curso (RF11–RF16)
+- **Ator:** Professor (cursos vinculados) ou Administrador.
+- **Fluxo principal:**
+  1. O Professor cria o curso informando título, descrição, área e nível; o curso fica como "rascunho".
+  2. Adiciona e ordena tópicos e anexa materiais (UC09).
+  3. Cadastra questões por tópico com dificuldade, alternativa correta e explicação (UC10).
+  4. Aciona "Publicar"; o sistema valida a cobertura de níveis por tópico.
+  5. O curso passa a "publicado" e aparece no catálogo.
+- **Fluxos alternativos:**
+  - **A1 — Título ausente:** o sistema não salva e indica o campo.
+  - **A2 — Questão sem alternativa correta:** o sistema não salva a questão.
+  - **A3 — Cobertura incompleta:** o sistema não publica e lista tópicos e níveis faltantes.
+  - **A4 — Curso não vinculado:** o Professor não consegue editar.
+
+### UC12 — Acompanhar turma (RF30–RF32)
+- **Ator:** Professor.
+- **Fluxo principal:**
+  1. O Professor abre o painel de um curso vinculado.
+  2. O sistema exibe alunos com progresso e taxa de acertos, e domínio médio por tópico.
+  3. Alunos com < 50% de acertos nas últimas 10 respostas aparecem como "precisa de atenção".
+  4. O Professor abre o detalhe de um aluno e vê domínio por tópico e respostas recentes.
+
+### UC13/UC14 — Gerenciar usuários e vínculos (RF04, RF05, RF34)
+- **Ator:** Administrador.
+- **Fluxo principal:**
+  1. O Administrador lista os usuários e cria, edita ou desativa um usuário.
+  2. Vincula Responsáveis a Alunos e Professores a Cursos.
+- **Fluxos alternativos:**
+  - **A1 — Desativação:** o usuário desativado deixa de aparecer na tela de entrada.
+
+### UC16 — Acompanhar alunos vinculados (RF33)
+- **Ator:** Responsável.
+- **Fluxo principal:**
+  1. O Responsável abre seu painel.
+  2. O sistema lista apenas os alunos vinculados, com cursos, progresso, sequência de dias e última atividade.
