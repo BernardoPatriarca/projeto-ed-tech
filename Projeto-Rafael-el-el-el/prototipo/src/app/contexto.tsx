@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { Dados, Usuario } from '../dominio/tipos';
+import type { Dados, UsuarioLegado as Usuario } from '../dominio/tipos';
 import type { Repositorio } from '../dados/repositorio';
 
 interface ValorApp {

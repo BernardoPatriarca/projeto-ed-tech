@@ -1,6 +1,6 @@
 # Tasks
 
-Plano de implementação, ainda não executado. Cada tarefa inclui sua verificação; os testes indicados devem acompanhar a entrega correspondente. A conclusão documental dos artefatos não significa implementação ou autorização de arquivamento.
+Plano de implementação acompanhado pelos checkboxes abaixo. Cada tarefa inclui sua verificação; os testes indicados devem acompanhar a entrega correspondente. A conclusão documental dos artefatos não significa implementação ou autorização de arquivamento.
 
 Referências: [OA] organização acadêmica; [PA] perfis e acesso; [GC] conteúdo; [AA] aprendizado adaptativo; [GA] gamificação; [AC] acompanhamento; [CC] catálogo. D1–D10 referem-se às decisões do [design]. Os nomes de requisitos e cenários citados pertencem às specs desta change.
 
@@ -8,11 +8,11 @@ Ordem: grupo 1 fornece contratos ao 2; o 3 usa políticas e persistência do 2 e
 
 ## 1. Modelo acadêmico e funções cumulativas
 
-- [ ] 1.1 Introduzir `Graduacao` e `Disciplina` em `dominio/tipos.ts`, separando cadastro acadêmico, publicação e conteúdo por disciplina; acrescentar validadores e testes de campos obrigatórios, código único por graduação e disciplina em rascunho. Verificar também disciplinas com mesmo código em graduações distintas. Referências: [OA] — Cadastro de graduações, Disciplinas de uma graduação; [GC] — Conteúdo pertencente à disciplina; D1.
-- [ ] 1.2 Modelar `PeriodoLetivo` e `Turma`, com identidades estáveis e referências explícitas; verificar com testes intervalo de datas inválido, disciplina/período inexistente, código duplicado na mesma oferta, turmas paralelas e turma sem alunos ou professores. Referências: [OA] — Períodos letivos, Ofertas de disciplinas em turmas; D1.
-- [ ] 1.3 Modelar matrículas e vínculos Professor–Turma, Coordenador–Graduação e Responsável–Aluno, com validação dos pares únicos; testar referências inválidas e duplicações sem gerar outra identidade, documentando as relações nos tipos. Referências: [OA] — Unicidade da matrícula, Vínculos de professores às turmas, Vínculos de coordenadores às graduações; [PA] — Vínculos entre responsável e alunos; D1.
-- [ ] 1.4 Substituir o contrato de perfil único por funções cumulativas sem duplicação e incluir Coordenador; verificar pessoa Professor e Coordenador com a mesma identidade e rejeição de pessoa ativa sem função. Atualizar os validadores de usuário e seus testes, sem inferir função a partir de vínculo. Referências: [PA] — Funções de usuário suportadas, Administração de usuários; D1–D2.
-- [ ] 1.5 Definir o documento acadêmico com versões de esquema/seed, revisão e data virtual, e fixtures mínimas independentes do seed de produção; verificar serialização e identidades preservadas ao renomear códigos. Atualizar o glossário e as relações em `docs/requisitos.md`, conferindo correspondência com os contratos. Referências: [OA] — Identidade das ofertas e histórico; [design] — D1, D8.
+- [x] 1.1 Introduzir `Graduacao` e `Disciplina` em `dominio/tipos.ts`, separando cadastro acadêmico, publicação e conteúdo por disciplina; acrescentar validadores e testes de campos obrigatórios, código único por graduação e disciplina em rascunho. Verificar também disciplinas com mesmo código em graduações distintas. Referências: [OA] — Cadastro de graduações, Disciplinas de uma graduação; [GC] — Conteúdo pertencente à disciplina; D1.
+- [x] 1.2 Modelar `PeriodoLetivo` e `Turma`, com identidades estáveis e referências explícitas; verificar com testes intervalo de datas inválido, disciplina/período inexistente, código duplicado na mesma oferta, turmas paralelas e turma sem alunos ou professores. Referências: [OA] — Períodos letivos, Ofertas de disciplinas em turmas; D1.
+- [x] 1.3 Modelar matrículas e vínculos Professor–Turma, Coordenador–Graduação e Responsável–Aluno, com validação dos pares únicos; testar referências inválidas e duplicações sem gerar outra identidade, documentando as relações nos tipos. Referências: [OA] — Unicidade da matrícula, Vínculos de professores às turmas, Vínculos de coordenadores às graduações; [PA] — Vínculos entre responsável e alunos; D1.
+- [x] 1.4 Substituir o contrato de perfil único por funções cumulativas sem duplicação e incluir Coordenador; verificar pessoa Professor e Coordenador com a mesma identidade e rejeição de pessoa ativa sem função. Atualizar os validadores de usuário e seus testes, sem inferir função a partir de vínculo. Referências: [PA] — Funções de usuário suportadas, Administração de usuários; D1–D2.
+- [x] 1.5 Definir o documento acadêmico com versões de esquema/seed, revisão e data virtual, e fixtures mínimas independentes do seed de produção; verificar serialização e identidades preservadas ao renomear códigos. Atualizar o glossário e as relações em `docs/requisitos.md`, conferindo correspondência com os contratos. Referências: [OA] — Identidade das ofertas e histórico; [design] — D1, D8.
 
 ## 2. Políticas de autorização, consultas e comandos do repositório
 

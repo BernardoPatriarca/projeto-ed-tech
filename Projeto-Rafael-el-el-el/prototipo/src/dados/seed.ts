@@ -5,7 +5,7 @@
  */
 import { calcularEstado, proximaQuestao } from '../adaptativo/motor';
 import { somarDias } from '../dominio/datas';
-import type { Curso, Dados, Dificuldade, Material, Questao, Resposta, Usuario } from '../dominio/tipos';
+import type { Curso, Dados, Dificuldade, Material, Questao, Resposta, UsuarioLegado as Usuario } from '../dominio/tipos';
 
 export const SEED_VERSAO = 1;
 export const DATA_INICIAL = '2026-03-16';

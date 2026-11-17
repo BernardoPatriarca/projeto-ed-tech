@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../app/contexto';
-import { NOME_PERFIL, PERFIS, type Perfil, type Usuario } from '../../dominio/tipos';
+import { NOME_PERFIL, PERFIS, type Perfil, type UsuarioLegado as Usuario } from '../../dominio/tipos';
 
 export function totaisPlataforma(dados: ReturnType<typeof useApp>['dados']) {
   return {

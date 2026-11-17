@@ -4,7 +4,7 @@
  */
 import { verificarPublicacao, type VerificacaoPublicacao } from '../conteudo/regras';
 import { somarDias } from '../dominio/datas';
-import type { Curso, Dados, Matricula, Questao, Resposta, Usuario } from '../dominio/tipos';
+import type { Curso, Dados, MatriculaLegada as Matricula, Questao, Resposta, UsuarioLegado as Usuario } from '../dominio/tipos';
 import { SEED_VERSAO, criarSeed } from './seed';
 
 const CHAVE_DADOS = 'trilha-adaptativa:dados';

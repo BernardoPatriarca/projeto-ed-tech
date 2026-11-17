@@ -3,7 +3,32 @@
 Fonte: specs da change `edtech-adaptativa-fase-inicial` (`openspec/changes/edtech-adaptativa-fase-inicial/specs/`).
 Cada requisito funcional (RF) indica a **capability** de origem e o **requirement** da spec correspondente.
 
-## Requisitos Funcionais
+## Modelo acadêmico — organização acadêmica
+
+Fonte do novo contrato: [spec de organização acadêmica](../openspec/changes/organizacao-academica/specs/organizacao-academica/spec.md), [funções cumulativas](../openspec/changes/organizacao-academica/specs/perfis-acesso/spec.md) e [design D1](../openspec/changes/organizacao-academica/design.md).
+
+O grupo 1 introduz tipos e validações estruturais puras. O repositório, a autorização e as telas atuais ainda usam os contratos legados explicitamente identificados; os comandos autorizados e a substituição informada dos dados pertencem aos grupos seguintes. Esta entrega não muda o seed de produção, suas versões nem as chaves de armazenamento.
+
+| Conceito | Contrato e relação |
+| --- | --- |
+| Graduação | `Graduacao`: curso superior com ID estável e código único; sem tópicos ou publicação de conteúdo. |
+| Disciplina | `Disciplina`: pertence a uma graduação; código único nela; conteúdo começa em rascunho e é compartilhado por suas turmas. |
+| Período letivo | `PeriodoLetivo`: ID global e datas civis válidas em `AAAA-MM-DD`, com fim igual ou posterior ao início; não é nível pedagógico. |
+| Turma | `Turma`: uma disciplina e um período; código único nessa combinação. Pode existir sem alunos e professores. |
+| Matrícula | `Matricula`: ID próprio e par aluno–turma único; repetir o par identifica o registro original. Nova oferta tem outro contexto. |
+| Docência | `VinculoProfessor`: par professor–turma, admitindo vários vínculos por pessoa e por turma. |
+| Coordenação | `VinculoCoordenador`: par coordenador–graduação, independente do vínculo docente. |
+| Responsável | `VinculoResponsavel`: par Responsável–Aluno preservado do domínio anterior. |
+| Pessoa e funções | `Usuario`: uma identidade e `funcoes[]`, entre Aluno, Professor, Coordenador, Administrador e Responsável. Funções são explícitas e não duplicadas; pessoa ativa precisa de ao menos uma. Um vínculo não atribui função automaticamente. |
+| Documento acadêmico | `DadosAcademicos`: versão de esquema, versão de seed, revisão, data virtual e coleções separadas por entidade e vínculo. Tipos de resposta e revisão textual estão declarados; seus comportamentos ainda serão implementados nos grupos 3 e 4. |
+
+IDs são referências; nomes e códigos editáveis não são chaves de matrícula ou histórico. Os validadores de relacionamentos desta etapa verificam referências e identificam pares repetidos sem gravar, gerar IDs ou alterar listas. Função, atividade no momento da atribuição e autorização do autor serão verificadas pelos comandos do grupo 2; pessoas hoje inativas continuam referenciáveis nos históricos.
+
+`UsuarioLegado`, `MatriculaLegada`, `VinculoProfessorLegado`, `Curso` e `Dados` preservam somente a compatibilidade da aplicação anterior. Novos modelos usam os contratos acadêmicos sem tornar `perfil`/`funcoes` ou `cursoId`/`turmaId` opcionais no mesmo objeto. As fixtures de `prototipo/src/testes/fixtures-academicas.ts` são isoladas e não importam nem substituem o seed atual.
+
+Os RFs abaixo registram a entrega inicial e sua rastreabilidade histórica. Regras substituídas, como perfil único e automatrícula em curso de conteúdo, não são requisitos do novo modelo; os grupos posteriores atualizarão os fluxos e a matriz completa ao integrar as novas funções.
+
+## Requisitos Funcionais da entrega inicial (referência histórica)
 
 ### Perfis e acesso — `perfis-acesso`
 

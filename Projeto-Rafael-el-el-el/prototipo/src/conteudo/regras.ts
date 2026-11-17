@@ -1,5 +1,5 @@
 /** Regras de conteúdo de curso: validações, publicação e permissão de edição. */
-import { DIFICULDADES, type Curso, type Dificuldade, type Questao, type Usuario, type VinculoProfessor } from '../dominio/tipos';
+import { DIFICULDADES, type Curso, type Dificuldade, type Questao, type UsuarioLegado as Usuario, type VinculoProfessorLegado as VinculoProfessor } from '../dominio/tipos';
 
 export interface FaltanteTopico {
   topicoId: string;
