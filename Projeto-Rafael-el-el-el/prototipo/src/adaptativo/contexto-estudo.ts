@@ -81,7 +81,7 @@ export function calcularEstadoMatricula(
   const total = topicos.length, quantidade = topicos.filter((t) => t.dominado).length;
   return {
     matriculaId: contexto.matriculaId, disciplinaId: disciplina.id, topicos,
-    progresso: total === 0 ? 0 : (quantidade / total) * 100,
+    progresso: total === 0 ? 0 : (100 * quantidade) / total,
     concluido: total > 0 && quantidade === total,
   };
 }
