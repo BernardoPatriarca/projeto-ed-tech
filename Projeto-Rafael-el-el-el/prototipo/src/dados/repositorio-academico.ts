@@ -51,6 +51,19 @@ export function congelarLeitura<T>(valor: T): LeituraProfunda<T> {
   return valor as LeituraProfunda<T>;
 }
 
+const COLECOES: (keyof DadosAcademicos)[] = [
+  'usuarios', 'graduacoes', 'disciplinas', 'periodosLetivos', 'turmas', 'matriculas',
+  'questoes', 'respostas', 'vinculosProfessor', 'vinculosCoordenador', 'vinculosResponsavel', 'revisoesTextuais',
+];
+
+/** Esquema e formato mínimos do documento acadêmico; usado também pela inspeção do armazenamento. */
+export function ehDocumentoAcademicoCompativel(valor: unknown): valor is DadosAcademicos {
+  const dados = valor as DadosAcademicos | null;
+  return !!dados && typeof dados === 'object' && dados.versaoSchema === VERSAO_SCHEMA_ACADEMICO
+    && Number.isSafeInteger(dados.revisao) && dados.revisao >= 0
+    && COLECOES.every((campo) => Array.isArray(dados[campo]));
+}
+
 /** Base interna, sem comandos de cadastro ou consultas de negócio (tarefas 2.5+).
  * Não usa window/localStorage, chaves padrão, inicialização automática ou seed.
  * Callbacks protegidos são código do repositório, nunca entradas da interface.
@@ -70,13 +83,7 @@ export abstract class RepositorioAcademico {
     }
     try {
       const dados = JSON.parse(bruto) as DadosAcademicos;
-      const colecoes: (keyof DadosAcademicos)[] = [
-        'usuarios', 'graduacoes', 'disciplinas', 'periodosLetivos', 'turmas', 'matriculas',
-        'questoes', 'respostas', 'vinculosProfessor', 'vinculosCoordenador', 'vinculosResponsavel', 'revisoesTextuais',
-      ];
-      if (!dados || dados.versaoSchema !== VERSAO_SCHEMA_ACADEMICO
-        || !Number.isSafeInteger(dados.revisao) || dados.revisao < 0
-        || !colecoes.every((campo) => Array.isArray(dados[campo]))) throw new Error('Formato incompatível');
+      if (!ehDocumentoAcademicoCompativel(dados)) throw new Error('Formato incompatível');
       return dados;
     } catch {
       throw new ErroRepositorioAcademico('DADOS_INCOMPATIVEIS', 'Documento incompatível; nenhuma reposição automática foi realizada.');
