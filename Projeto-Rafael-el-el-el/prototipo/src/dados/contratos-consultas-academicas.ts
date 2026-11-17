@@ -1,5 +1,5 @@
 import type {
-  Disciplina, Funcao, Graduacao, NivelDisciplina, PeriodoLetivo, QuestaoDisciplina,
+  Dificuldade, Disciplina, Funcao, Graduacao, NivelDisciplina, PeriodoLetivo, QuestaoDisciplina,
   StatusConteudo, Topico,
 } from '../dominio/tipos';
 import type { AlvoTurma } from './comandos-academicos';
@@ -60,6 +60,24 @@ export interface ConteudoEditavel {
   graduacao: Pick<Graduacao, 'id' | 'codigo' | 'nome'>;
   disciplina: DisciplinaAdministravel & { topicos: Topico[] };
   questoes: QuestaoDisciplina[];
+}
+
+/** Histórico de uma matrícula: conteúdo apresentado na resposta, não o conteúdo corrente. */
+export interface RespostaHistorica {
+  id: string; topicoId: string; questaoId: string; alternativa: number; acertou: boolean;
+  dificuldade: Dificuldade; variacaoDominio: number; xpConcedido: number; data: string; momento: number;
+  enunciado: string; alternativas: string[]; correta: number; explicacao: string;
+}
+export interface HistoricoMatricula {
+  matriculaId: string;
+  aluno: IdentidadePessoa;
+  contexto: ContextoTurma;
+  trilha: {
+    topicos: { topicoId: string; titulo: string; dominio: number; desbloqueado: boolean; dominado: boolean }[];
+    /** Exato (0–100); a formatação pertence à apresentação. */
+    progresso: number; concluido: boolean;
+  };
+  respostas: RespostaHistorica[];
 }
 
 /** Contratos futuros do grupo 5. Nenhuma consulta de 2.10 devolve estes resultados.

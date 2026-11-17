@@ -2,10 +2,12 @@ import {
   pessoaAtiva, podeExecutar, type LeituraProfunda, type PedidoAutorizacao, type RecursoAcademico,
 } from '../dominio/autorizacao';
 import { NIVEIS_CURSO, type DadosAcademicos, type Funcao, type Disciplina } from '../dominio/tipos';
-import { ComandosAcademicos, type AlvoDisciplina, type AlvoTurma } from './comandos-academicos';
+import { calcularEstadoMatricula, resolverContextoEstudo } from '../adaptativo/contexto-estudo';
+import type { AlvoDisciplina, AlvoTurma } from './comandos-academicos';
+import { ComandosEstudo, conferirAlvoMatricula, type AlvoMatricula } from './comandos-estudo';
 import type {
   CandidatoVinculo, ConsultaAcademica, ConteudoEditavel, ContextoTurma, DetalheDisciplina,
-  DetalheGraduacao, DisciplinaAdministravel, DisciplinaCatalogo, EstruturaAdministravel,
+  DetalheGraduacao, DisciplinaAdministravel, HistoricoMatricula, DisciplinaCatalogo, EstruturaAdministravel,
   FiltrosCatalogo, GraduacaoCatalogo, IdentidadePessoa, MatriculadoTurma, MinhaTurma,
   OfertaCatalogo, PedidoCandidatos,
 } from './contratos-consultas-academicas';
@@ -74,7 +76,7 @@ function conferirFiltros(filtros: FiltrosCatalogo) {
 /** Fachada isolada de consultas e comandos. Toda projeção enumera os campos de seu DTO.
  * Não expõe obterDados(), seletores públicos ou históricos; não inicializa persistência.
  */
-export class ConsultasAcademicas extends ComandosAcademicos {
+export class ConsultasAcademicas extends ComandosEstudo {
   consultarCatalogo(filtros: FiltrosCatalogo = {}): Promise<ConsultaAcademica<GraduacaoCatalogo[]>> {
     return this.consultar(institucional('consultar-catalogo'), (dados, autor) => {
       conferirFiltros(filtros);
@@ -234,4 +236,37 @@ export class ConsultasAcademicas extends ComandosAcademicos {
       } };
     });
   }
+
+  /** Retomada do próprio aluno: estado reconstituído e conteúdo originalmente apresentado. */
+  consultarHistoricoEstudo(alvo: AlvoMatricula): Promise<ConsultaAcademica<HistoricoMatricula>> {
+    return this.consultar({ acao: 'consultar-estudo', recurso: { tipo: 'matricula', ...alvo } },
+      (dados) => ({ revisao: dados.revisao, dados: historicoDTO(dados, alvo) }));
+  }
+
+  /** Detalhe docente: exige vínculo com a turma da matrícula, não apenas a mesma disciplina ou aluno. */
+  consultarHistoricoAlunoDocente(alvo: AlvoMatricula): Promise<ConsultaAcademica<HistoricoMatricula>> {
+    return this.consultar({ acao: 'consultar-historico-docente', recurso: { tipo: 'matricula', ...alvo } },
+      (dados) => ({ revisao: dados.revisao, dados: historicoDTO(dados, alvo) }));
+  }
+}
+
+/** Usa a cópia gravada em cada resposta; nunca reavalia contra o cadastro corrente. */
+function historicoDTO(dados: Documento, alvo: AlvoMatricula): HistoricoMatricula {
+  conferirAlvoMatricula(alvo);
+  const contexto = resolverContextoEstudo(dados, alvo.matriculaId);
+  if (!contexto) rejeitar('matriculaId', 'Matrícula inexistente.');
+  const trilha = calcularEstadoMatricula(contexto);
+  return {
+    matriculaId: contexto.matriculaId,
+    aluno: identidade(achar(dados.usuarios, contexto.alunoId)),
+    contexto: contextoTurma(dados, contexto.turmaId),
+    trilha: { topicos: trilha.topicos.map((t) => ({ ...t })), progresso: trilha.progresso, concluido: trilha.concluido },
+    respostas: contexto.respostas.map((r) => ({
+      id: r.id, topicoId: r.topicoId, questaoId: r.questaoId, alternativa: r.alternativa, acertou: r.acertou,
+      dificuldade: r.dificuldade, variacaoDominio: r.variacaoDominio, xpConcedido: r.xpConcedido,
+      data: r.data, momento: r.momento, enunciado: r.conteudoOriginal.enunciado,
+      alternativas: [...r.conteudoOriginal.alternativas], correta: r.conteudoOriginal.correta,
+      explicacao: r.conteudoOriginal.explicacao,
+    })),
+  };
 }
