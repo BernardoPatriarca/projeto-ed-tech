@@ -257,3 +257,50 @@ sequenceDiagram
     end
     UI-->>R: Cards por aluno com seus cursos
 ```
+
+## 7. Jornadas da organização acadêmica (tarefas 7.7 e 7.10)
+
+As jornadas abaixo substituem, para a organização acadêmica, a matrícula em curso (§2) e a sessão por curso (§3): o estudo acontece **por matrícula** (aluno + turma), e a matrícula é um ato administrativo.
+
+### 7.1 Jornada do Aluno (7.10)
+
+```mermaid
+journey
+    title Jornada do Aluno por turma
+    section Acesso
+      Entrar como pessoa de demonstração: 4: Aluno
+      Ver Minhas turmas (graduação, disciplina, turma, período): 5: Aluno
+      Consultar o catálogo e as ofertas (sem se matricular): 4: Aluno
+    section Estudo na turma
+      Abrir a trilha da turma (primeiro tópico desbloqueado): 5: Aluno
+      Responder questão adaptada: 4: Aluno
+      Receber feedback, explicação e variação do domínio: 5: Aluno
+      Revisar materiais após dois erros seguidos: 3: Aluno
+      Dominar o tópico e desbloquear o próximo: 5: Aluno
+    section Evolução da turma
+      Ganhar XP, sequência e conquistas da turma: 5: Aluno
+      Concluir a trilha da turma (sem aprovação acadêmica): 5: Aluno
+```
+
+Pontos de atenção: cada turma tem trilha, XP, sequência e conquistas próprios — mesma disciplina em outro período recomeça do zero; a URL do estudo é `/aluno/disciplinas/:disciplinaId/turmas/:turmaId` e IDs que não correspondem a uma matrícula do aluno resultam em acesso negado; turmas cujo conteúdo está em rascunho aparecem sem ação de estudo; URLs antigas por curso levam a *Minhas turmas*, sem escolher uma turma arbitrária. A questão exibida nunca traz gabarito nem explicação antes da resposta.
+
+### 7.2 Jornada da Coordenação (7.7)
+
+```mermaid
+flowchart TD
+    I([Pessoa com a função Coordenador]) --> P[Painel da coordenação:<br/>uma linha por turma dos cursos vinculados]
+    P --> G[Gestão acadêmica]
+    G --> L[Lista só as turmas dos seus cursos]
+    L --> T[Gerir uma turma]
+    T --> M{Matricular aluno}
+    M -- Aluno já matriculado --> R[Informar que o estudo foi preservado<br/>nada é reiniciado]
+    M -- Novo --> OK[Matrícula criada na data virtual<br/>sem copiar histórico]
+    T --> D[Atribuir ou remover professor da turma]
+    T --> X[Turma de outro curso por endereço direto]
+    X --> N[Acesso negado, sem dados]
+    P --> C[Cadastros: editar graduação, disciplinas e turmas do seu curso]
+    C --> NC[Períodos letivos e novas graduações: só o Administrador]
+```
+
+A coordenação gere cadastro, turmas, matrículas e atribuições docentes **do seu escopo**, mas não edita conteúdo pedagógico (sem vínculo docente), não altera resultados de estudo e não vê respostas individuais. Uma pessoa Professor e Coordenador usa duas áreas distintas, cada uma com o seu escopo. O Administrador usa a mesma tela de gestão para qualquer turma.
+

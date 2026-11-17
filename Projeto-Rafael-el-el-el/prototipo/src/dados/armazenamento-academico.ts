@@ -2,7 +2,7 @@
  * Armazenamento local do documento acadêmico (design D8): inspeção SEM efeitos, inicialização e
  * substituição/restauração somente após confirmação. Nunca reinterpreta os dados legados.
  */
-import { ConsultasAcademicas } from './consultas-academicas';
+import { RepositorioApp } from './repositorio-app';
 import {
   ehDocumentoAcademicoCompativel, type PersistenciaAcademica, type SessaoAcademica,
 } from './repositorio-academico';
@@ -112,6 +112,6 @@ export function criarSessaoLocal(storage: ArmazenamentoEscrita): SessaoAcademica
 }
 
 /** Repositório acadêmico sobre o armazenamento local, sem inicializar nem inspecionar por conta própria. */
-export function criarRepositorioLocal(storage: ArmazenamentoEscrita): ConsultasAcademicas {
-  return new ConsultasAcademicas(criarPersistenciaLocal(storage), criarSessaoLocal(storage));
+export function criarRepositorioLocal(storage: ArmazenamentoEscrita): RepositorioApp {
+  return new RepositorioApp(criarPersistenciaLocal(storage), criarSessaoLocal(storage));
 }

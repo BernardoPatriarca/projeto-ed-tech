@@ -97,6 +97,13 @@ export abstract class RepositorioAcademico {
     return structuredClone(usuario) as Usuario;
   }
 
+  /** Entrada simulada: pessoas ativas e válidas, só com identificação e funções (sem e-mail ou vínculos). */
+  async listarPessoasEntrada(): Promise<{ id: string; nome: string; funcoes: Usuario['funcoes'] }[]> {
+    const dados = this.lerDocumento();
+    return dados.usuarios.filter((u) => pessoaAtiva(dados, u.id))
+      .map((u) => ({ id: u.id, nome: u.nome, funcoes: [...u.funcoes] }));
+  }
+
   async sair(): Promise<void> {
     this.sessao.definirUsuarioId(null);
   }

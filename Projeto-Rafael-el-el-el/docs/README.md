@@ -10,6 +10,8 @@ Todos os diagramas são Mermaid e renderizam no GitHub e no preview Markdown do 
 | [fluxos-usuario.md](fluxos-usuario.md) | Jornadas por perfil (§1) e diagramas de atividade/sequência: matrícula (§2), sessão adaptativa (§3), criação e publicação de curso (§4), acompanhamento pelo professor (§5) e pelo responsável (§6) |
 | [../prototipo/README.md](../prototipo/README.md) | Como executar o protótipo navegável e usuários de demonstração |
 
+> **Organização acadêmica:** [casos-de-uso.md](casos-de-uso.md) (UC13/UC14, UC16 e UC17 atualizados), [fluxos-usuario.md](fluxos-usuario.md) (§4.1 edição e publicação do conteúdo; §7 jornadas do Aluno e da Coordenação) e [requisitos.md](requisitos.md) (modelo, matriz de autorização, estudo, indicadores) descrevem o comportamento atual; as seções por curso/perfil único são referência histórica. A matriz de rastreabilidade consolidada fica para a tarefa 8.1.
+
 Especificações de origem: [`openspec/changes/edtech-adaptativa-fase-inicial/specs/`](../openspec/changes/edtech-adaptativa-fase-inicial/specs/).
 
 ## Matriz de rastreabilidade RF → caso de uso → fluxo

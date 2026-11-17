@@ -155,3 +155,30 @@ flowchart LR
 - **Fluxo principal:**
   1. O Responsável abre seu painel.
   2. O sistema lista apenas os alunos vinculados, com cursos, progresso, sequência de dias e última atividade.
+
+## Organização acadêmica — casos de uso atualizados (change `organizacao-academica`)
+
+Os casos abaixo **substituem** as descrições por perfil único e por curso acima (mantidas como referência histórica) para as telas entregues nas tarefas 7.4, 7.15 e 7.16. Pessoas têm funções cumulativas explícitas (Aluno, Professor, Coordenador, Administrador e Responsável); cada função abre sua própria área, e vínculos nunca concedem funções.
+
+### UC13/UC14 — Gerenciar pessoas, funções e vínculos globais (7.4)
+- **Ator:** Administrador (exclusivo; Coordenador, Professor, Aluno e Responsável não alcançam estas telas nem por endereço direto).
+- **Fluxo principal:**
+  1. O Administrador lista as pessoas (nome, e-mail, funções e situação) e cria ou edita uma pessoa escolhendo uma ou mais funções — por exemplo, Professor e Coordenador na mesma pessoa.
+  2. Desativa ou reativa uma pessoa: a desativação não apaga matrículas, respostas ou vínculos.
+  3. Em *Vínculos*, atribui ou remove a coordenação de uma graduação e vincula Responsáveis a Alunos.
+- **Regras e alternativos:**
+  - **A1 — Pessoa ativa sem função:** rejeitada com o motivo; nada é salvo.
+  - **A2 — Coordenação sem a função Coordenador** (ou vínculo Responsável–Aluno cujo destino não é Aluno): rejeitado; ninguém concede coordenação a si próprio sem ser Administrador.
+  - **A3 — Revogação:** retirar uma função ou vínculo vale na próxima operação, inclusive com telas já abertas; o histórico e os demais vínculos permanecem.
+
+### UC16 — Acompanhar alunos vinculados (7.15)
+- **Ator:** Responsável.
+- **Fluxo principal:**
+  1. O Responsável abre seu painel; o sistema lista **apenas** os alunos vinculados.
+  2. Para cada aluno, mostra uma linha por oferta (disciplina, graduação, turma e período) com progresso, sequência de dias e última atividade — duas ofertas da mesma disciplina aparecem separadas.
+- **Alternativos:** **A1 — Sem respostas** na oferta: progresso zero, sequência zero e última atividade “Sem atividade”. O painel nunca traz histórico de questões, gabaritos ou XP detalhado.
+
+### UC17 — Consultar a visão geral administrativa (7.16)
+- **Ator:** Administrador.
+- **Fluxo principal:** o sistema apresenta o total de **pessoas distintas**, as pessoas por função (quem tem duas funções conta uma vez no total e uma vez em cada função), graduações, disciplinas **por estado de publicação** (publicadas e em rascunho), períodos letivos, turmas e matrículas.
+- **Regra:** graduações não são contadas como publicadas nem como rascunho — a publicação pertence à disciplina.
