@@ -1,5 +1,6 @@
 import { ConsultasAcademicas } from '../dados/consultas-academicas';
 import type { DadosAcademicos } from '../dominio/tipos';
+import type { ConteudoCandidato } from '../dados/comandos-conteudo';
 import { ambienteComandos, prepararConteudoPublicado } from './ambiente-comandos-academicos';
 
 /**
@@ -25,3 +26,32 @@ export function ambienteEstudo(preparar?: (dados: DadosAcademicos) => void) {
 
 /** Id da questão do tópico e dificuldade dados na disciplina d-alg. */
 export const questao = (topico: 'tp-1' | 'tp-2', dificuldade: 'facil' | 'medio' | 'dificil') => `d-alg-${topico}-${dificuldade}`;
+
+/** Candidato completo de conteúdo a partir do documento gravado (como o editor o prepararia). */
+export function candidatoDe(dados: DadosAcademicos, disciplinaId = 'd-alg'): ConteudoCandidato {
+  const d = dados.disciplinas.find((x) => x.id === disciplinaId)!;
+  return {
+    topicos: structuredClone(d.topicos),
+    questoes: dados.questoes.filter((q) => q.disciplinaId === disciplinaId)
+      .map(({ disciplinaId: _omitida, ...q }) => structuredClone(q)),
+  };
+}
+
+type Ambiente = ReturnType<typeof ambienteEstudo>;
+
+/** Resposta real pelo comando do aluno; deixa a sessão com esse aluno. */
+export async function responderComo(
+  a: Ambiente, alunoId: string, matriculaId: string, questaoId: string, alternativa = 0,
+) {
+  await a.repo.entrar(alunoId);
+  return a.repo.registrarResposta({ matriculaId }, { questaoId, alternativa }, a.ler().revisao);
+}
+
+/** Conclui a trilha de d-alg (dois tópicos, quatro acertos Difíceis cada). */
+export async function concluirTrilha(a: Ambiente, alunoId: string, matriculaId: string) {
+  for (const tp of ['tp-1', 'tp-2'] as const) {
+    for (let i = 0; i < 4; i++) await responderComo(a, alunoId, matriculaId, questao(tp, 'dificil'));
+  }
+}
+
+export const ALVO = { disciplinaId: 'd-alg' };

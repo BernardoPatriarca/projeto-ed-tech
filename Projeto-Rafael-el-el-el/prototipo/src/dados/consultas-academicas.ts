@@ -4,7 +4,8 @@ import {
 import { NIVEIS_CURSO, type DadosAcademicos, type Funcao, type Disciplina } from '../dominio/tipos';
 import { calcularEstadoMatricula, resolverContextoEstudo } from '../adaptativo/contexto-estudo';
 import type { AlvoDisciplina, AlvoTurma } from './comandos-academicos';
-import { ComandosEstudo, conferirAlvoMatricula, type AlvoMatricula } from './comandos-estudo';
+import { ComandosConteudo } from './comandos-conteudo';
+import { conferirAlvoMatricula, type AlvoMatricula } from './comandos-estudo';
 import type {
   CandidatoVinculo, ConsultaAcademica, ConteudoEditavel, ContextoTurma, DetalheDisciplina,
   DetalheGraduacao, DisciplinaAdministravel, HistoricoMatricula, DisciplinaCatalogo, EstruturaAdministravel,
@@ -76,7 +77,7 @@ function conferirFiltros(filtros: FiltrosCatalogo) {
 /** Fachada isolada de consultas e comandos. Toda projeção enumera os campos de seu DTO.
  * Não expõe obterDados(), seletores públicos ou históricos; não inicializa persistência.
  */
-export class ConsultasAcademicas extends ComandosEstudo {
+export class ConsultasAcademicas extends ComandosConteudo {
   consultarCatalogo(filtros: FiltrosCatalogo = {}): Promise<ConsultaAcademica<GraduacaoCatalogo[]>> {
     return this.consultar(institucional('consultar-catalogo'), (dados, autor) => {
       conferirFiltros(filtros);

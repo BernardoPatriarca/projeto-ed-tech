@@ -186,6 +186,45 @@ sequenceDiagram
     end
 ```
 
+## 4.1 Edição e publicação do conteúdo da disciplina (organização acadêmica — tarefas 4.1–4.7)
+
+Substitui, para a organização acadêmica, o fluxo por curso da seção 4 (mantida como referência histórica): o conteúdo pertence à **disciplina** e é compartilhado por todas as turmas. O editor prepara o conteúdo inteiro e o salva de uma só vez (`salvarConteudo`); a publicação é um comando separado (`publicarConteudo`) e ajustes de material têm comando próprio (`salvarMateriais`).
+
+```mermaid
+flowchart TD
+    I([Professor vinculado a uma turma<br/>ou Administrador]) --> AB[Abrir conteúdo da disciplina]
+    AB --> AUT{Autorizado?<br/>vínculo docente ou admin}
+    AUT -- Não --> NEG[Negado; conteúdo intacto<br/>Coordenação sem vínculo docente não edita]
+    AUT -- Sim --> PREP[Preparar alterações no editor:<br/>tópicos, materiais, questões]
+    PREP --> SALVAR[Salvar alterações: candidato completo]
+    SALVAR --> EST{Há resposta em qualquer<br/>turma da disciplina?}
+    EST -- Sim --> ESTR{Adiciona, remove ou<br/>reordena tópicos?}
+    ESTR -- Sim --> R1[Rejeitar: estudo já iniciado<br/>vale também para o Administrador]
+    ESTR -- Não --> QR
+    EST -- Não --> QR{Altera questão respondida?}
+    QR -- Exclui, muda tópico, dificuldade,<br/>gabarito, ordem ou quantidade --> R2[Rejeitar, mesmo com confirmação]
+    QR -- Corrige só texto --> DIF[Apresentar a diferença exata]
+    DIF --> CONF{Autor confirma<br/>a diferença e a revisão original?}
+    CONF -- Não / outra diferença / revisão antiga --> R3[Rejeitar; exigir nova confirmação]
+    CONF -- Sim --> PUBL
+    QR -- Não --> PUBL{Disciplina publicada?}
+    PUBL -- Sim --> COB{≥1 tópico e cada tópico com<br/>Fácil, Médio e Difícil?}
+    COB -- Não --> R4[Rejeitar tudo: indicar tópico e nível faltantes<br/>não despublica]
+    COB -- Sim --> GRAV
+    PUBL -- Não --> GRAV[Gravar uma única vez<br/>histórico e resultados dos alunos intactos]
+    R1 --> FIM([Conteúdo anterior preservado])
+    R2 --> FIM
+    R3 --> FIM
+    R4 --> FIM
+```
+
+Regras do fluxo:
+
+- **Tudo ou nada.** Uma edição que mistura uma parte válida (por exemplo, correção de material) com outra inválida (por exemplo, remover a única questão Fácil de um tópico) é rejeitada por inteiro: o documento persistido, a publicação e os dados dos alunos permanecem idênticos, e a interface não exibe sucesso. Falha de gravação tem o mesmo efeito.
+- **Publicar** exige ao menos um tópico e as três dificuldades em cada tópico; se faltar algo, a disciplina continua em rascunho e a rejeição lista os tópicos e níveis faltantes. A cobertura é verificada de novo em todo salvamento de disciplina já publicada.
+- **Confirmação textual.** Apenas enunciado, texto das alternativas e explicação de questão respondida (e título de tópico com respostas) podem ser corrigidos, após o próprio autor examinar a diferença e confirmar que significado e correspondência foram preservados. Não há segundo revisor. Nova alteração, outra diferença ou outra revisão de origem exigem nova confirmação; a confirmação não substitui a autorização de edição. O histórico dos alunos continua exibindo o conteúdo originalmente apresentado.
+- **Materiais** podem ser corrigidos a qualquer momento (inclusive com trilhas em andamento ou concluídas) sem alterar tópicos, questões ou resultados.
+
 ## 5. Acompanhamento pelo professor (UC12 — RF30–RF32)
 
 ```mermaid
