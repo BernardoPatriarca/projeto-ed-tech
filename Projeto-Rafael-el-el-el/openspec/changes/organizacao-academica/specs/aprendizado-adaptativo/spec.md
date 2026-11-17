@@ -123,7 +123,7 @@ Quando o Aluno errar duas questões seguidas no mesmo tópico e turma, o sistema
 - **THEN** o erro de 2026.2 não dispara uma sugestão de dois erros seguidos em 2027.1
 
 ### Requirement: Conclusão da trilha da turma
-O progresso SHALL ser a porcentagem de tópicos da disciplina dominados pelo Aluno na turma, arredondada para inteiro. Quando todos estiverem dominados, o sistema SHALL marcar a trilha como concluída. Sem tópicos, SHALL mostrar progresso zero e não concluída. Conclusão de trilha MUST NOT representar aprovação acadêmica ou conclusão da graduação.
+O progresso SHALL ser 100 vezes a razão entre tópicos dominados e tópicos da disciplina, por Aluno–Turma, sem arredondamento para cálculos posteriores. Somente a exibição SHALL arredondar ao inteiro mais próximo. Quando todos estiverem dominados, a trilha SHALL ser concluída. Sem tópicos, SHALL ter progresso zero e não concluída. Conclusão de trilha MUST NOT representar aprovação acadêmica ou conclusão da graduação.
 
 #### Scenario: Progresso parcial
 - **GIVEN** dois tópicos na disciplina e um dominado por Ana na turma A
@@ -133,6 +133,35 @@ O progresso SHALL ser a porcentagem de tópicos da disciplina dominados pelo Alu
 #### Scenario: Trilha concluída
 - **WHEN** Ana domina o último tópico pendente na turma A
 - **THEN** a trilha dessa turma mostra 100% e concluída, sem alterar outras turmas nem registrar aprovação acadêmica ou graduação concluída
+
+#### Scenario: Exibição não reduz a precisão do progresso
+- **GIVEN** Ana com um de seis tópicos dominados em sua turma
+- **WHEN** consulta a trilha e seu progresso é usado no cálculo da média da turma
+- **THEN** a trilha exibe 17% e o cálculo da média utiliza o valor exato 100/6, sem substituí-lo por 17
+
+### Requirement: Preservação do estado de estudo em edições de conteúdo
+O sistema MUST preservar, por Aluno–Turma, históricos, avaliações e datas, domínio, tópicos dominados, desbloqueios, progresso e conclusão em edições permitidas ou rejeitadas. Respostas antigas SHALL exibir enunciado, alternativas na ordem original e explicação originalmente apresentados, mesmo após correção aprovada. Edições MUST NOT reavaliar respostas, reiniciar estudo, desbloquear tópicos ou reabrir conclusão. Somente nova resposta válida SHALL atualizar seu contexto de estudo.
+
+#### Scenario: Material ajustado com trilha em andamento
+- **GIVEN** Ana em A com um de dois tópicos dominados, domínio 55 no segundo tópico e ambos desbloqueados
+- **WHEN** um autor autorizado corrige um link de material da disciplina sem alterar questões ou regras
+- **THEN** o histórico e suas avaliações e datas, os domínios, os desbloqueios e o progresso de 50% de Ana são preservados
+
+#### Scenario: Conclusão preservada em outra turma
+- **GIVEN** Ana em andamento em A e Bruno com todos os tópicos dominados e progresso 100% em B da mesma disciplina
+- **WHEN** um autor autorizado ajusta um material da disciplina
+- **THEN** cada aluno mantém seu histórico e estado próprios, e a trilha de Bruno continua concluída com os mesmos domínios e desbloqueios
+
+#### Scenario: Tentativa de alteração estrutural preserva todas as ofertas
+- **GIVEN** históricos de alunos em A e B da mesma disciplina, incluindo uma trilha concluída
+- **WHEN** um autor tenta remover ou reordenar um tópico após a primeira resposta
+- **THEN** a operação é rejeitada e todos os históricos, avaliações, datas, domínios, desbloqueios, progressos e conclusões de A e B permanecem inalterados
+
+#### Scenario: Histórico exibe o conteúdo anterior à correção
+- **GIVEN** respostas de Ana em A e Bruno em B à mesma questão, com enunciado, alternativas e explicação originalmente apresentados
+- **WHEN** o autor autorizado salva uma correção textual após examinar e confirmar a diferença exata
+- **THEN** as respostas antigas continuam exibindo o conteúdo original, com a mesma ordem e correspondência das alternativas, preservando históricos, avaliações, datas, domínio, desbloqueios, progresso e conclusão
+- **AND** XP, conquistas e datas de obtenção permanecem inalterados, conforme Preservação da gamificação em edições de conteúdo
 
 ### Requirement: Respostas somente no contexto autorizado
 O sistema MUST aceitar resposta somente da pessoa ativa com função Aluno, matriculada na turma informada, para questão de tópico desbloqueado da disciplina dessa turma com conteúdo publicado. Uma resposta inválida MUST NOT alterar histórico, domínio, progresso ou gamificação.

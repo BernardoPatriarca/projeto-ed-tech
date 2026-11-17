@@ -19,7 +19,7 @@ O sistema SHALL exibir ao Aluno, para cada turma matriculada, progresso, domíni
 - **THEN** vê progresso, domínio e XP iguais a zero e taxa zero acompanhada da indicação Sem atividade
 
 ### Requirement: Painel do professor por turma
-O sistema SHALL exibir ao Professor apenas as turmas vinculadas, com disciplina e período. Em cada turma, SHALL listar alunos matriculados com progresso e taxa de acertos e domínio médio por tópico. Médias SHALL considerar todos os alunos matriculados daquela turma, atribuindo domínio zero aos que ainda não responderam, sem misturar outras ofertas.
+O sistema SHALL exibir ao Professor apenas suas turmas vinculadas, com disciplina e período. Em cada turma, SHALL listar matriculados com progresso e taxa de acertos e domínio médio por tópico. As médias SHALL incluir todos os matriculados daquela turma, usando zero para quem não iniciou e as regras de precisão e exibição das médias, sem misturar ofertas.
 
 #### Scenario: Professor com várias turmas
 - **GIVEN** Paulo vinculado às turmas A e B de Algoritmos e C de Banco de Dados
@@ -41,7 +41,7 @@ Ao consultar uma turma sem alunos, o sistema SHALL mostrar zero matrículas e me
 
 #### Scenario: Coordenador consulta oferta vazia
 - **WHEN** um Coordenador autorizado abre uma turma sem alunos de sua graduação
-- **THEN** encontra o mesmo estado vazio e nenhum indicador inválido
+- **THEN** vê zero matrículas, Nenhum aluno matriculado e progresso médio e domínio médio por tópico apresentados como “Sem dados”, sem indicador inválido
 
 ### Requirement: Alunos com dificuldade
 O painel do Professor SHALL destacar como Precisa de atenção alunos com menos de 50% de acertos nas últimas até 10 respostas válidas da turma consultada. Se houver menos de 10, SHALL usar as disponíveis. Sem respostas, SHALL indicar Sem atividade e MUST NOT classificar por dificuldade. Esse destaque MUST NOT gerar diagnóstico ou encaminhamento de monitoria.
@@ -74,7 +74,7 @@ O Professor SHALL poder abrir o detalhe de um Aluno matriculado em turma docente
 - **THEN** o acesso é negado, mesmo que o detalhe de Ana em A seja permitido
 
 ### Requirement: Painel do coordenador
-O sistema SHALL exibir ao Coordenador apenas graduações vinculadas, com disciplinas e turmas por período, matrículas, progresso médio e domínio médio por tópico. Os indicadores SHALL ser de consulta básica, sem prever evasão, comparar séries históricas ou editar resultados de estudo. O Coordenador SHALL poder acessar a gestão acadêmica desse escopo. Históricos detalhados de respostas MUST NOT ser liberados pela função Coordenador.
+O sistema SHALL exibir ao Coordenador suas graduações vinculadas, disciplinas e turmas por período, com matrículas e médias somente por turma. MUST NOT apresentar média global entre turmas, disciplinas ou graduações, prever evasão, comparar séries históricas ou permitir editar resultados de estudo. O Coordenador SHALL acessar a gestão acadêmica desse escopo, sem acesso a históricos detalhados de respostas por essa função.
 
 #### Scenario: Coordenação consulta suas ofertas
 - **GIVEN** Carla coordenadora somente de Direito
@@ -90,6 +90,55 @@ O sistema SHALL exibir ao Coordenador apenas graduações vinculadas, com discip
 - **GIVEN** Carla coordenadora somente de Direito
 - **WHEN** acessa a gestão de uma turma de Direito pelo painel e atribui um professor ativo com essa função
 - **THEN** o vínculo docente é salvo e a consulta reflete a atualização, mantendo as respostas e os indicadores de estudo existentes
+
+#### Scenario: Navegação entre cursos não cria média global
+- **GIVEN** Carla coordenadora de duas graduações com várias disciplinas e turmas
+- **WHEN** consulta a visão de seus cursos ou filtra por disciplina ou período
+- **THEN** os resultados mostram médias identificadas por turma, sem média combinada dos cursos, disciplinas ou ofertas selecionados
+
+### Requirement: Progresso médio por turma
+O progresso médio da turma SHALL ser a soma dos progressos individuais de todos os seus matriculados dividida pelo número de matriculados. Cada progresso individual SHALL usar a porcentagem exata de tópicos dominados, sem arredondamento prévio; quem não iniciou SHALL contribuir com zero. Matrículas e progressos de outras turmas MUST NOT compor soma ou divisor. Sem matriculados, SHALL exibir “Sem dados”.
+
+#### Scenario: Progresso de 80 e zero inclui quem não iniciou
+- **GIVEN** uma turma de cinco tópicos com apenas Ana, que dominou quatro e tem progresso 80%, e Bruno, que não iniciou e tem progresso 0%
+- **WHEN** o Coordenador consulta o progresso médio da turma
+- **THEN** o sistema exibe 40%, calculado por (80 + 0) / 2
+
+#### Scenario: Outra turma não influencia a média
+- **GIVEN** turma A com progressos 80% e 0% e turma B da mesma disciplina com progressos 100% e 100%
+- **WHEN** o Coordenador consulta A e depois outra pessoa com progresso 0% é matriculada em B
+- **THEN** a média de A permanece 40%, usando somente suas duas matrículas, sem média combinada com B
+
+### Requirement: Domínio médio por tópico da turma
+O domínio médio de cada tópico SHALL ser a soma dos domínios desse tópico de todos os matriculados na turma dividida pelo número de matriculados. Aluno que não iniciou o tópico SHALL contribuir com domínio zero. Domínios de outro tópico, aluno não matriculado ou outra turma MUST NOT participar do cálculo. Sem matriculados, cada domínio médio SHALL ser apresentado como “Sem dados”.
+
+#### Scenario: Coordenação inclui zero no domínio médio
+- **GIVEN** turma A com Ana com domínio 80 em Vetores e Bruno sem respostas nesse tópico
+- **WHEN** o Coordenador consulta o domínio médio de Vetores em A
+- **THEN** vê 40, calculado por (80 + 0) / 2
+
+#### Scenario: Mesmo tópico em outra oferta não influencia
+- **GIVEN** turma A com domínios 80 e 0 em Vetores e turma B da mesma disciplina com domínio 100 para todos os alunos
+- **WHEN** o Coordenador consulta Vetores em A
+- **THEN** a média é 40 e os domínios de B não participam da soma nem do divisor
+
+### Requirement: Precisão e exibição das médias
+O sistema MUST somar valores sem arredondamento intermediário e dividir pelo total de matriculados antes de arredondar. Somente o resultado exibido de progresso médio e domínio médio por tópico SHALL ser arredondado ao inteiro mais próximo; em empate de meio ponto, SHALL arredondar para cima. Percentuais individuais já arredondados para exibição MUST NOT alimentar os cálculos das médias.
+
+#### Scenario: Média usa progressos exatos
+- **GIVEN** uma turma de seis tópicos com três alunos que dominaram um, um e quatro tópicos, respectivamente
+- **WHEN** o Coordenador consulta o progresso médio
+- **THEN** vê 33%, calculado por ((100/6) + (100/6) + (400/6)) / 3, sem usar os valores individuais exibidos de 17%, 17% e 67%, que produziriam 34%
+
+#### Scenario: Arredondamento do domínio somente na exibição
+- **GIVEN** somente três matriculados com domínios 80, 0 e 0 no mesmo tópico
+- **WHEN** o Coordenador consulta o domínio médio desse tópico
+- **THEN** o sistema calcula 80/3 e exibe 27, sem arredondar parcelas ou resultados intermediários
+
+#### Scenario: Empate de meio ponto
+- **GIVEN** somente dois matriculados com domínios 80 e 5 no mesmo tópico
+- **WHEN** o Coordenador consulta o domínio médio desse tópico
+- **THEN** o sistema calcula 42,5 e exibe 43
 
 ### Requirement: Painel do responsável
 O sistema SHALL exibir ao Responsável, para cada Aluno vinculado, as disciplinas e turmas matriculadas com graduação, período, progresso, sequência de dias e última atividade naquela turma. Sem respostas, SHALL indicar Sem atividade e sequência zero. A visualização MUST NOT incluir alunos não vinculados ou histórico detalhado de questões.

@@ -76,3 +76,21 @@ O sistema SHALL exibir XP, sequência e conquistas na trilha da turma atual, ide
 - **GIVEN** Ana com 100 XP em Algoritmos de 2026.2 e zero XP em 2027.1
 - **WHEN** alterna a visualização das duas trilhas
 - **THEN** cada uma mostra seu próprio XP, sequência e conquistas com identificação do período
+
+### Requirement: Preservação da gamificação em edições de conteúdo
+Edições permitidas e tentativas rejeitadas de conteúdo MUST preservar XP, conquistas e suas datas originais em todas as combinações Aluno–Turma. Edições MUST NOT conceder novamente ou revogar conquistas, alterar XP de respostas anteriores nem contar como estudo. A sequência SHALL continuar dependente somente de respostas válidas e da data da demonstração, sem reinício ou incremento provocado pela edição.
+
+#### Scenario: Material corrigido para aluno em andamento
+- **GIVEN** Ana em andamento em A, com 150 XP, sequência de 3 dias e conquista Primeiro tópico dominado obtida em 10/11/2026
+- **WHEN** um autor corrige um link de material sem mudar a data da demonstração ou registrar respostas
+- **THEN** Ana mantém 150 XP, sequência de 3 dias e a mesma conquista com data de 10/11/2026
+
+#### Scenario: Conquista de conclusão preservada entre turmas
+- **GIVEN** Ana em andamento em A e Bruno com trilha concluída em B da mesma disciplina, com 200 XP e conquista Trilha concluída de 12/11/2026
+- **WHEN** o Professor ajusta um material ou tenta adicionar um tópico, sendo a adição rejeitada
+- **THEN** ambos mantêm XP e conquistas anteriores, e Bruno mantém uma única conquista de conclusão com data de 12/11/2026
+
+#### Scenario: Edição de questão respondida não recalcula XP
+- **GIVEN** Ana com 30 XP por acerto em questão Difícil na turma A e Bruno com respostas à mesma questão em B
+- **WHEN** o autor tenta mudar a dificuldade da questão e a alteração é rejeitada
+- **THEN** os XP, as conquistas e suas datas de Ana e Bruno permanecem inalterados em suas respectivas turmas
