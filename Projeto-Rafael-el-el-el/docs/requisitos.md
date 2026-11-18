@@ -1,11 +1,11 @@
 # Requisitos — EdTech de Aprendizado Adaptativo por Curso
 
-Fonte: specs da change `edtech-adaptativa-fase-inicial` (`openspec/changes/edtech-adaptativa-fase-inicial/specs/`).
+Fonte: specs da change `edtech-adaptativa-fase-inicial` (arquivada em `openspec/changes/archive/2026-11-17-edtech-adaptativa-fase-inicial/specs/`); a base vigente está em `openspec/specs/`.
 Cada requisito funcional (RF) indica a **capability** de origem e o **requirement** da spec correspondente.
 
 ## Modelo acadêmico — organização acadêmica
 
-Fonte do novo contrato: [spec de organização acadêmica](../openspec/changes/organizacao-academica/specs/organizacao-academica/spec.md), [funções cumulativas](../openspec/changes/organizacao-academica/specs/perfis-acesso/spec.md) e [design D1](../openspec/changes/organizacao-academica/design.md).
+Fonte do novo contrato: [spec de organização acadêmica](../openspec/specs/organizacao-academica/spec.md), [funções cumulativas](../openspec/specs/perfis-acesso/spec.md) e [design D1](../openspec/changes/archive/2026-11-17-organizacao-academica/design.md).
 
 O grupo 1 introduz tipos e validações estruturais puras; o grupo 2 acrescenta políticas, infraestrutura, comandos e consultas acadêmicas isolados. As telas atuais continuam usando o repositório e os contratos legados explicitamente identificados. A integração e a substituição informada dos dados pertencem aos grupos seguintes. Esta entrega não muda o seed de produção, suas versões nem as chaves de armazenamento.
 

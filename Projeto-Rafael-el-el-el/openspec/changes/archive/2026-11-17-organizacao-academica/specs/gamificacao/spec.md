@@ -31,6 +31,26 @@ O sistema SHALL conceder ao Aluno 10, 20 ou 30 XP por resposta correta de dificu
 - **WHEN** erra uma questão nessa turma
 - **THEN** seu total permanece em 20 XP
 
+### Requirement: Preservação da gamificação em edições de conteúdo
+Edições permitidas e tentativas rejeitadas de conteúdo MUST preservar XP, conquistas e suas datas originais em todas as combinações Aluno–Turma. Edições MUST NOT conceder novamente ou revogar conquistas, alterar XP de respostas anteriores nem contar como estudo. A sequência SHALL continuar dependente somente de respostas válidas e da data da demonstração, sem reinício ou incremento provocado pela edição.
+
+#### Scenario: Material corrigido para aluno em andamento
+- **GIVEN** Ana em andamento em A, com 150 XP, sequência de 3 dias e conquista Primeiro tópico dominado obtida em 10/11/2026
+- **WHEN** um autor corrige um link de material sem mudar a data da demonstração ou registrar respostas
+- **THEN** Ana mantém 150 XP, sequência de 3 dias e a mesma conquista com data de 10/11/2026
+
+#### Scenario: Conquista de conclusão preservada entre turmas
+- **GIVEN** Ana em andamento em A e Bruno com trilha concluída em B da mesma disciplina, com 200 XP e conquista Trilha concluída de 12/11/2026
+- **WHEN** o Professor ajusta um material ou tenta adicionar um tópico, sendo a adição rejeitada
+- **THEN** ambos mantêm XP e conquistas anteriores, e Bruno mantém uma única conquista de conclusão com data de 12/11/2026
+
+#### Scenario: Edição de questão respondida não recalcula XP
+- **GIVEN** Ana com 30 XP por acerto em questão Difícil na turma A e Bruno com respostas à mesma questão em B
+- **WHEN** o autor tenta mudar a dificuldade da questão e a alteração é rejeitada
+- **THEN** os XP, as conquistas e suas datas de Ana e Bruno permanecem inalterados em suas respectivas turmas
+
+## MODIFIED Requirements
+
 ### Requirement: Sequência de dias de estudo
 O sistema SHALL contar dias consecutivos com ao menos uma resposta válida do Aluno na turma, usando a data da demonstração. Várias respostas no mesmo dia SHALL contar um único dia. Um dia inteiro sem resposta nessa turma MUST zerar a sequência; antes de o dia atual terminar, uma sequência encerrada ontem SHALL permanecer visível.
 
@@ -48,6 +68,11 @@ O sistema SHALL contar dias consecutivos com ao menos uma resposta válida do Al
 - **GIVEN** Ana com sequência de 3 dias em A e respostas somente em B no dia seguinte
 - **WHEN** esse dia termina e a demonstração avança para o próximo dia
 - **THEN** a sequência em A é zero, independentemente do estudo em B
+
+#### Scenario: Sequência interrompida
+- **GIVEN** o Aluno tem sequência de 3 dias na turma
+- **WHEN** ele passa um dia inteiro sem responder questões nessa turma
+- **THEN** a sequência da turma volta a 0
 
 ### Requirement: Conquistas
 O sistema SHALL conceder conquistas por Aluno–Turma para primeira questão respondida, primeiro tópico dominado, sequência de 7 dias e trilha concluída. Cada conquista MUST ser concedida no máximo uma vez nessa combinação, com data de obtenção; marcos de outra turma MUST NOT ser utilizados.
@@ -77,20 +102,12 @@ O sistema SHALL exibir XP, sequência e conquistas na trilha da turma atual, ide
 - **WHEN** alterna a visualização das duas trilhas
 - **THEN** cada uma mostra seu próprio XP, sequência e conquistas com identificação do período
 
-### Requirement: Preservação da gamificação em edições de conteúdo
-Edições permitidas e tentativas rejeitadas de conteúdo MUST preservar XP, conquistas e suas datas originais em todas as combinações Aluno–Turma. Edições MUST NOT conceder novamente ou revogar conquistas, alterar XP de respostas anteriores nem contar como estudo. A sequência SHALL continuar dependente somente de respostas válidas e da data da demonstração, sem reinício ou incremento provocado pela edição.
+#### Scenario: Ver indicadores do curso
+- **WHEN** o Aluno abre a trilha de uma turma
+- **THEN** o XP, a sequência de dias e as conquistas daquela turma ficam visíveis, com identificação da disciplina, do código da turma e do período
 
-#### Scenario: Material corrigido para aluno em andamento
-- **GIVEN** Ana em andamento em A, com 150 XP, sequência de 3 dias e conquista Primeiro tópico dominado obtida em 10/11/2026
-- **WHEN** um autor corrige um link de material sem mudar a data da demonstração ou registrar respostas
-- **THEN** Ana mantém 150 XP, sequência de 3 dias e a mesma conquista com data de 10/11/2026
+## REMOVED Requirements
 
-#### Scenario: Conquista de conclusão preservada entre turmas
-- **GIVEN** Ana em andamento em A e Bruno com trilha concluída em B da mesma disciplina, com 200 XP e conquista Trilha concluída de 12/11/2026
-- **WHEN** o Professor ajusta um material ou tenta adicionar um tópico, sendo a adição rejeitada
-- **THEN** ambos mantêm XP e conquistas anteriores, e Bruno mantém uma única conquista de conclusão com data de 12/11/2026
-
-#### Scenario: Edição de questão respondida não recalcula XP
-- **GIVEN** Ana com 30 XP por acerto em questão Difícil na turma A e Bruno com respostas à mesma questão em B
-- **WHEN** o autor tenta mudar a dificuldade da questão e a alteração é rejeitada
-- **THEN** os XP, as conquistas e suas datas de Ana e Bruno permanecem inalterados em suas respectivas turmas
+### Requirement: XP por curso
+**Reason**: A unidade de estudo passou de curso para a matrícula (aluno + turma de uma disciplina). O XP passa a ser contabilizado por aluno e turma.
+**Migration**: Use o requisito "XP por turma".

@@ -14,7 +14,7 @@ Todos os diagramas são Mermaid e renderizam no GitHub e no preview Markdown do 
 
 > **Organização acadêmica:** [casos-de-uso.md](casos-de-uso.md) (UC13/UC14, UC16 e UC17 atualizados), [fluxos-usuario.md](fluxos-usuario.md) (§4.1 edição e publicação do conteúdo; §7 jornadas do Aluno e da Coordenação) e [requisitos.md](requisitos.md) (modelo, matriz de autorização, estudo, indicadores) descrevem o comportamento atual; as seções por curso/perfil único são referência histórica. A rastreabilidade requisito → teste está em [rastreabilidade.md](rastreabilidade.md).
 
-Especificações de origem: [`openspec/changes/edtech-adaptativa-fase-inicial/specs/`](../openspec/changes/edtech-adaptativa-fase-inicial/specs/).
+Especificações vigentes: [`openspec/specs/`](../openspec/specs/) (base consolidada). Registro das duas changes: [`2026-11-17-edtech-adaptativa-fase-inicial`](../openspec/changes/archive/2026-11-17-edtech-adaptativa-fase-inicial/) (entrega inicial) e [`2026-11-17-organizacao-academica`](../openspec/changes/archive/2026-11-17-organizacao-academica/) (organização acadêmica).
 
 ## Matriz de rastreabilidade RF → caso de uso → fluxo
 

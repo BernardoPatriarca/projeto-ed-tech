@@ -255,7 +255,7 @@ Para rollback técnico, voltar ao código anterior junto com seu namespace de da
 
 Antes do arquivamento, cumprir a reconciliação de D10 em etapa separada. Nesta entrega documental não são executados migração, build do protótipo, testes comportamentais, consolidação, commit ou push.
 
-**Nota da etapa de implementação (tarefas 1–8).** O plano acima foi seguido: modelo e comandos autorizados, consultas, telas e seed novos, com inicialização separada da inspeção, namespace `trilha-adaptativa:academico:*` e preservação do legado como cópia técnica. Os testes e o build foram executados (`docs/validacao-final.md`). **Permanecem não executados** a consolidação da base inicial, a reconciliação de D10 e o arquivamento; a validação estrutural (`openspec validate --strict`) passou, sem provar comportamento.
+**Nota da etapa de implementação (tarefas 1–8).** O plano acima foi seguido: modelo e comandos autorizados, consultas, telas e seed novos, com inicialização separada da inspeção, namespace `trilha-adaptativa:academico:*` e preservação do legado como cópia técnica. Os testes e o build foram executados (`docs/validacao-final.md`). A consolidação da base inicial, a reconciliação de D10 e o arquivamento foram executados em ações separadas e autorizadas; a validação estrutural (`openspec validate --strict`) passou, sem provar comportamento.
 
 ## Open Questions
 

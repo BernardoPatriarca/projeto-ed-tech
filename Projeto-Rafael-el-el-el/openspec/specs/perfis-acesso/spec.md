@@ -1,22 +1,9 @@
-# Spec Delta
+# perfis-acesso Specification
 
 ## Purpose
-
 Define funções cumulativas, entrada simulada e permissões dependentes de vínculos, preservando a separação dos dados acadêmicos de cada pessoa e oferta.
 
-## ADDED Requirements
-
-### Requirement: Funções de usuário suportadas
-O sistema SHALL suportar as funções Aluno, Professor, Coordenador, Administrador e Responsável. Cada pessoa ativa MUST ter uma ou mais funções e uma identidade única na demonstração. A mesma pessoa SHALL poder exercer simultaneamente Professor e Coordenador, com acesso às áreas autorizadas de ambas as funções.
-
-#### Scenario: Pessoa com duas funções
-- **GIVEN** Carla com funções Professor e Coordenador na mesma conta
-- **WHEN** Carla entra na demonstração
-- **THEN** o sistema oferece as áreas de docência e coordenação sem exigir outra conta
-
-#### Scenario: Usuário sem função
-- **WHEN** o Administrador tenta salvar uma pessoa ativa sem nenhuma função
-- **THEN** o sistema rejeita a alteração e solicita ao menos uma função
+## Requirements
 
 ### Requirement: Entrada simulada no protótipo
 No protótipo, o sistema SHALL permitir entrar escolhendo uma pessoa ativa de demonstração, sem senha, e SHALL permitir sair e trocar de pessoa a qualquer momento. A entrada SHALL exibir apenas áreas permitidas às funções dessa pessoa. Sair MUST impedir consultas e operações restritas até uma nova entrada.
@@ -40,6 +27,22 @@ O Administrador SHALL poder listar, criar, editar e desativar pessoas e suas fun
 - **GIVEN** Paulo com sessão de demonstração aberta
 - **WHEN** Paulo tenta consultar uma turma depois de ter sido desativado
 - **THEN** o sistema nega o acesso e solicita nova entrada
+
+#### Scenario: Desativar usuário
+- **WHEN** o Administrador desativa uma pessoa com a função Professor
+- **THEN** ela deixa de aparecer como opção de entrada e é marcada como inativa na lista, preservando vínculos e histórico
+
+### Requirement: Funções de usuário suportadas
+O sistema SHALL suportar as funções Aluno, Professor, Coordenador, Administrador e Responsável. Cada pessoa ativa MUST ter uma ou mais funções e uma identidade única na demonstração. A mesma pessoa SHALL poder exercer simultaneamente Professor e Coordenador, com acesso às áreas autorizadas de ambas as funções.
+
+#### Scenario: Pessoa com duas funções
+- **GIVEN** Carla com funções Professor e Coordenador na mesma conta
+- **WHEN** Carla entra na demonstração
+- **THEN** o sistema oferece as áreas de docência e coordenação sem exigir outra conta
+
+#### Scenario: Usuário sem função
+- **WHEN** o Administrador tenta salvar uma pessoa ativa sem nenhuma função
+- **THEN** o sistema rejeita a alteração e solicita ao menos uma função
 
 ### Requirement: Acesso restrito por função e vínculo
 O sistema MUST autorizar cada consulta e alteração pela função e pelo vínculo aplicável ao recurso solicitado, inclusive por endereço direto. Uma tentativa não autorizada MUST NOT exibir dados restritos nem alterar dados, e SHALL informar acesso negado ou redirecionar a uma área permitida. Ocultar uma ação MUST NOT ser a única restrição.

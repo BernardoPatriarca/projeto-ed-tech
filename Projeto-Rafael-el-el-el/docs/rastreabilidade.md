@@ -1,8 +1,8 @@
-# Matriz de rastreabilidade — change `organizacao-academica`
+# Matriz de rastreabilidade — organização acadêmica
 
-Cada requisito das sete specs da change é ligado aos testes automatizados que o verificam (arquivos em `prototipo/src`) e lista seus cenários. A ligação é feita pelo nome do requisito citado nos blocos `describe` dos testes (convenção adotada nas tarefas 1–7); cenários são cobertos pelos testes do requisito a que pertencem. Requisitos que dependem do navegador real têm também um roteiro manual na seção final.
+Cada requisito da base `openspec/specs/` (após o arquivamento de `organizacao-academica`) é ligado aos testes automatizados que o verificam (arquivos em `prototipo/src`) e lista seus cenários. A ligação é feita pelo nome do requisito citado nos blocos `describe` dos testes; cenários são cobertos pelos testes do requisito a que pertencem. Requisitos que dependem do navegador real têm também um roteiro manual na seção final.
 
-Gerada a partir de `openspec/changes/organizacao-academica/specs/*/spec.md` e dos arquivos `*.test.*`. Esta matriz mostra cobertura por teste; **não** substitui a validação estrutural do OpenSpec nem a consolidação da base (veja `tasks.md`, *Workflow follow-up*).
+Gerada a partir de `openspec/specs/*/spec.md` e dos arquivos `*.test.*`. Mostra cobertura por teste; a validação estrutural do OpenSpec não comprova comportamento.
 
 
 ## Acompanhamento de desempenho (`acompanhamento-desempenho`)
@@ -10,29 +10,29 @@ Gerada a partir de `openspec/changes/organizacao-academica/specs/*/spec.md` e do
 | Requisito | Cenários | Testes que o verificam |
 | --- | --- | --- |
 | Painel do aluno | Aluno consulta seu desempenho; Matrícula sem respostas | `dados/seed-historico.test.ts`, `desempenho/indicadores-academicos.test.ts`, `testes/aluno.test.tsx` |
-| Painel do professor por turma | Professor com várias turmas; Média inclui alunos sem respostas | `testes/professor.test.tsx` |
-| Turma sem alunos | Professor consulta turma vazia; Coordenador consulta oferta vazia | `desempenho/indicadores-academicos.test.ts`, `testes/professor.test.tsx` |
 | Alunos com dificuldade | Aluno destacado; Limite de atenção; Poucas respostas | `desempenho/indicadores-academicos.test.ts`, `testes/professor.test.tsx` |
 | Detalhe de aluno para o professor | Ver detalhe do aluno; Mesmo aluno em turma não vinculada | `dados/historico-estudo.test.ts`, `desempenho/indicadores-academicos.test.ts` |
+| Painel do responsável | Responsável acompanha aluno; Aluno sem atividade recente | `desempenho/indicadores-academicos.test.ts`, `testes/responsavel.test.tsx` |
+| Visão geral do administrador | Totais com funções cumulativas; Totais acadêmicos; Administrador consulta visão geral | `testes/admin.test.tsx` |
+| Painel do professor por turma | Professor com várias turmas; Média inclui alunos sem respostas | `testes/professor.test.tsx` |
+| Turma sem alunos | Professor consulta turma vazia; Coordenador consulta oferta vazia | `desempenho/indicadores-academicos.test.ts`, `testes/professor.test.tsx` |
 | Painel do coordenador | Coordenação consulta suas ofertas; Pessoa professora e coordenadora consulta painéis distintos; Gestão acadêmica a partir do painel; Navegação entre cursos não cria média global | `desempenho/indicadores-academicos.test.ts`, `testes/coordenacao.test.tsx` |
 | Progresso médio por turma | Progresso de 80 e zero inclui quem não iniciou; Outra turma não influencia a média | `desempenho/indicadores-academicos.test.ts`, `testes/coordenacao.test.tsx` |
 | Domínio médio por tópico da turma | Coordenação inclui zero no domínio médio; Mesmo tópico em outra oferta não influencia | `desempenho/indicadores-academicos.test.ts`, `testes/coordenacao.test.tsx` |
 | Precisão e exibição das médias | Média usa progressos exatos; Arredondamento do domínio somente na exibição; Empate de meio ponto | `desempenho/indicadores-academicos.test.ts`, `testes/coordenacao.test.tsx` |
-| Painel do responsável | Responsável acompanha aluno; Aluno sem atividade recente | `desempenho/indicadores-academicos.test.ts`, `testes/responsavel.test.tsx` |
-| Visão geral do administrador | Totais com funções cumulativas; Totais acadêmicos | `testes/admin.test.tsx` |
 
 ## Aprendizado adaptativo (`aprendizado-adaptativo`)
 
 | Requisito | Cenários | Testes que o verificam |
 | --- | --- | --- |
-| Trilha independente por aluno e turma | Independência entre períodos; Turmas paralelas não se influenciam; Alunos não se influenciam; Disciplinas distintas não se influenciam | `dados/seed-historico.test.ts` |
-| Inicialização e retomada da trilha | Início sem diagnóstico; Retomada preserva estado | `adaptativo/contexto-estudo.test.ts`, `testes/aluno.test.tsx` |
-| Nível de domínio por tópico | Acerto aumenta domínio; Erro não produz valor negativo; Acerto não excede o limite | `adaptativo/motor.test.ts` |
+| Nível de domínio por tópico | Acerto aumenta domínio; Erro diminui domínio sem ficar negativo; Acerto não excede o limite | `adaptativo/motor.test.ts` |
 | Dificuldade conforme domínio | Domínio intermediário recebe questão média; Limites das faixas | `adaptativo/estudo.test.ts`, `adaptativo/motor.test.ts` |
 | Escolha da próxima atividade | Foco no tópico mais fraco; Evitar repetição imediata; Reutilização sem questões inéditas | `adaptativo/estudo.test.ts`, `adaptativo/motor.test.ts` |
 | Desbloqueio de tópicos | Dominar tópico desbloqueia o próximo; Tópico bloqueado por acesso direto | `adaptativo/motor.test.ts` |
 | Feedback imediato | Feedback após erro | `adaptativo/estudo.test.ts`, `dados/comandos-estudo.test.ts`, `testes/aluno.test.tsx` |
 | Revisão sugerida | Dois erros seguidos; Erros de períodos diferentes | `adaptativo/estudo.test.ts`, `adaptativo/motor.test.ts`, `testes/aluno.test.tsx` |
+| Trilha independente por aluno e turma | Independência entre períodos; Turmas paralelas não se influenciam; Alunos não se influenciam; Disciplinas distintas não se influenciam | `dados/seed-historico.test.ts` |
+| Inicialização e retomada da trilha | Início sem diagnóstico; Retomada preserva estado | `adaptativo/contexto-estudo.test.ts`, `testes/aluno.test.tsx` |
 | Conclusão da trilha da turma | Progresso parcial; Trilha concluída; Exibição não reduz a precisão do progresso | `adaptativo/estudo.test.ts` |
 | Preservação do estado de estudo em edições de conteúdo | Material ajustado com trilha em andamento; Conclusão preservada em outra turma; Tentativa de alteração estrutural preserva todas as ofertas; Histórico exibe o conteúdo anterior à correção | `dados/historico-estudo.test.ts` |
 | Respostas somente no contexto autorizado | Questão de outra disciplina; Aluno sem matrícula | `dados/comandos-estudo.test.ts` |
@@ -41,32 +41,32 @@ Gerada a partir de `openspec/changes/organizacao-academica/specs/*/spec.md` e do
 
 | Requisito | Cenários | Testes que o verificam |
 | --- | --- | --- |
+| Busca e filtro no catálogo | Combinar filtros; Busca sem resultados; Filtrar por área | `testes/aluno.test.tsx` |
 | Catálogo de graduações e disciplinas publicadas | Aluno abre o catálogo | `testes/aluno.test.tsx` |
-| Busca e filtro no catálogo | Combinar filtros; Busca sem resultados | `testes/aluno.test.tsx` |
 | Detalhe acadêmico e ofertas | Ver detalhe da disciplina; Oferta sem professor | `testes/aluno.test.tsx` |
 | Acesso às turmas sem automatrícula | Aluno matriculado continua estudo; Aluno não matriculado consulta oferta | `testes/aluno.test.tsx`, `testes/shell.test.tsx` |
-| Minhas turmas | Mesma disciplina em períodos distintos; Matrícula anterior à publicação; Aluno sem matrículas | `testes/aluno.test.tsx`, `testes/responsavel.test.tsx`, `testes/shell.test.tsx` |
+| Minhas turmas | Mesma disciplina em períodos distintos; Matrícula anterior à publicação; Aluno sem matrículas | `testes/aluno.test.tsx`, `testes/integracao-funcoes.test.tsx`, `testes/responsavel.test.tsx`, `testes/shell.test.tsx` |
 
 ## Gamificação (`gamificacao`)
 
 | Requisito | Cenários | Testes que o verificam |
 | --- | --- | --- |
+| Sequência de dias de estudo | Sequência mantida; Várias respostas no mesmo dia; Sequência interrompida apesar de estudo em outra turma; Sequência interrompida | `gamificacao/gamificacao-matricula.test.ts`, `gamificacao/gamificacao.test.ts` |
+| Conquistas | Primeiro tópico dominado; Conquista não é duplicada; Primeira questão mesmo com erro; Sequência e conclusão | `dados/seed-historico.test.ts`, `gamificacao/gamificacao-matricula.test.ts`, `gamificacao/gamificacao.test.ts` |
+| Exibição de gamificação | Alternar entre ofertas; Ver indicadores do curso | `testes/aluno.test.tsx` |
 | Gamificação independente por aluno e turma | Independência entre períodos; Independência entre alunos | `gamificacao/gamificacao-matricula.test.ts` |
 | XP por turma | Acerto em questão difícil; Erro não concede XP | `gamificacao/gamificacao-matricula.test.ts` |
-| Sequência de dias de estudo | Sequência mantida; Várias respostas no mesmo dia; Sequência interrompida apesar de estudo em outra turma | `gamificacao/gamificacao-matricula.test.ts`, `gamificacao/gamificacao.test.ts` |
-| Conquistas | Primeiro tópico dominado; Conquista não é duplicada; Primeira questão mesmo com erro; Sequência e conclusão | `dados/seed-historico.test.ts`, `gamificacao/gamificacao-matricula.test.ts`, `gamificacao/gamificacao.test.ts` |
-| Exibição de gamificação | Alternar entre ofertas | `testes/aluno.test.tsx` |
 | Preservação da gamificação em edições de conteúdo | Material corrigido para aluno em andamento; Conquista de conclusão preservada entre turmas; Edição de questão respondida não recalcula XP | `dados/gamificacao-edicoes.test.ts` |
 
 ## Gestão de conteúdo (`gestao-conteudo-curso`)
 
 | Requisito | Cenários | Testes que o verificam |
 | --- | --- | --- |
-| Conteúdo pertencente à disciplina | Duas turmas compartilham conteúdo; Oferta nova usa o conteúdo existente | `dados/conteudo-estrutura.test.ts` |
 | Tópicos ordenados | Reordenar tópicos; Tópico sem título | `dados/conteudo-estrutura.test.ts`, `testes/professor.test.tsx` |
-| Bloqueio estrutural após início do estudo | Aluno com trilha em andamento; Aluno já concluiu a trilha; Resposta em outra turma bloqueia oferta nova | `dados/conteudo-estrutura.test.ts`, `testes/professor.test.tsx` |
 | Materiais por tópico | Adicionar material; Ajuste seguro após estudo em várias turmas | `dados/conteudo-publicacao.test.ts` |
 | Banco de questões classificado | Cadastrar questão; Questão sem alternativa correta; Questão com tópico de outra disciplina | `dados/conteudo-questoes.test.ts` |
+| Conteúdo pertencente à disciplina | Duas turmas compartilham conteúdo; Oferta nova usa o conteúdo existente | `dados/conteudo-estrutura.test.ts` |
+| Bloqueio estrutural após início do estudo | Aluno com trilha em andamento; Aluno já concluiu a trilha; Resposta em outra turma bloqueia oferta nova | `dados/conteudo-estrutura.test.ts`, `testes/professor.test.tsx` |
 | Proteção de questões com respostas | Mudança de gabarito de questão respondida; Mudança de dificuldade afetaria domínio e XP; Alteração de sentido ou correspondência das alternativas; Exclusão de questão com resposta em outra turma; Reordenação não é correção textual permitida; Edição de questão ainda não respondida | `dados/conteudo-questoes.test.ts`, `testes/professor.test.tsx` |
 | Correção textual de questões respondidas | Correção textual aceita pelo próprio autor; Correção sem confirmação; Confirmação de uma alteração diferente; Nova edição após confirmar; Revisão original ficou desatualizada; Confirmação não substitui autorização de edição | `dados/conteudo-questoes.test.ts`, `testes/professor.test.tsx` |
 | Publicação de conteúdo da disciplina | Publicação bloqueada por cobertura; Disciplina sem tópicos; Publicação bem-sucedida | `dados/conteudo-publicacao.test.ts` |
@@ -94,9 +94,9 @@ Gerada a partir de `openspec/changes/organizacao-academica/specs/*/spec.md` e do
 
 | Requisito | Cenários | Testes que o verificam |
 | --- | --- | --- |
-| Funções de usuário suportadas | Pessoa com duas funções; Usuário sem função | `dominio/usuarios.test.ts`, `testes/shell.test.tsx` |
 | Entrada simulada no protótipo | Entrar como usuário de demonstração; Trocar de usuário | `dados/armazenamento-academico.test.ts` |
-| Administração de usuários | Desativar professor; Desativação durante sessão | `dados/comandos-administracao.test.ts`, `testes/admin.test.tsx` |
+| Administração de usuários | Desativar professor; Desativação durante sessão; Desativar usuário | `dados/comandos-administracao.test.ts`, `testes/admin.test.tsx` |
+| Funções de usuário suportadas | Pessoa com duas funções; Usuário sem função | `dominio/usuarios.test.ts`, `testes/shell.test.tsx` |
 | Acesso restrito por função e vínculo | Aluno tenta acessar área do professor; Professor tenta acessar turma não vinculada; Aluno tenta registrar resposta por outro aluno | `dados/indicadores-consultas.test.ts`, `testes/shell.test.tsx` |
 | Permissões cumulativas sem ampliação de vínculos | Professor e coordenador em cursos diferentes; Coordenação não autoriza edição docente; Docência não autoriza consulta de outras turmas | `testes/shell.test.tsx` |
 | Escopo de gestão da coordenação | Coordenador gerencia vínculo em seu curso; Coordenador gerencia estrutura de seu curso; Acesso direto a gestão de outro curso; Coordenador sem graduação | `dados/comandos-docentes.test.ts`, `testes/coordenacao.test.tsx` |

@@ -1,46 +1,9 @@
-# Spec Delta
+# aprendizado-adaptativo Specification
 
 ## Purpose
-
 Conduz o aluno pelos tópicos de uma disciplina com dificuldade adaptativa e feedback, mantendo histórico, domínio e progresso independentes em cada turma matriculada.
 
-## ADDED Requirements
-
-### Requirement: Trilha independente por aluno e turma
-O sistema MUST separar domínio por tópico, histórico de respostas, desbloqueios e progresso para cada combinação Aluno–Turma. Respostas de um aluno em uma turma MUST NOT alterar o estado de outro aluno ou turma, mesmo na mesma disciplina, graduação ou período. Não SHALL haver reaproveitamento automático de progresso entre ofertas.
-
-#### Scenario: Independência entre períodos
-- **GIVEN** Ana com tópico Vetores dominado na turma de Algoritmos de 2026.2 e nova matrícula em 2027.1
-- **WHEN** abre a trilha de 2027.1
-- **THEN** encontra domínio inicial zero e histórico vazio nessa turma e o estado de 2026.2 permanece intacto
-
-#### Scenario: Turmas paralelas não se influenciam
-- **GIVEN** Ana matriculada nas turmas A e B da mesma disciplina no mesmo período
-- **WHEN** responde corretamente na turma A
-- **THEN** somente o estado de Ana em A é atualizado e o de Ana em B permanece inalterado
-
-#### Scenario: Alunos não se influenciam
-- **GIVEN** Ana e Bruno matriculados na mesma turma
-- **WHEN** Ana domina um tópico
-- **THEN** domínio, histórico e desbloqueios de Bruno permanecem inalterados
-
-#### Scenario: Disciplinas distintas não se influenciam
-- **GIVEN** Ana matriculada em Algoritmos e Banco de Dados
-- **WHEN** responde em Algoritmos
-- **THEN** o estado da turma de Banco de Dados permanece inalterado
-
-### Requirement: Inicialização e retomada da trilha
-Na primeira matrícula, o sistema SHALL iniciar domínio e progresso em zero, histórico vazio e primeiro tópico desbloqueado quando houver conteúdo. Ao retomar a mesma matrícula, SHALL preservar o estado existente. O início do estudo MUST NOT exigir diagnóstico ou prova de nivelamento; conteúdo em rascunho MUST permanecer indisponível.
-
-#### Scenario: Início sem diagnóstico
-- **GIVEN** Ana recém-matriculada em turma com disciplina publicada
-- **WHEN** inicia o estudo
-- **THEN** recebe atividade Fácil do primeiro tópico sem realizar diagnóstico e os demais tópicos continuam bloqueados
-
-#### Scenario: Retomada preserva estado
-- **GIVEN** Ana com domínio 55 em um tópico da turma A
-- **WHEN** sai da demonstração, entra novamente e continua na turma A
-- **THEN** o domínio desse tópico continua em 55 e o histórico anterior está preservado
+## Requirements
 
 ### Requirement: Nível de domínio por tópico
 O sistema SHALL manter domínio por tópico de 0 a 100, iniciando em 0. Acertos SHALL aumentar o domínio em 10, 15 e 20 para Fácil, Médio e Difícil; erros SHALL diminuir em 15, 10 e 5, respectivamente. O resultado MUST ser limitado ao intervalo de 0 a 100 e afetar apenas o aluno e a turma da resposta.
@@ -50,7 +13,7 @@ O sistema SHALL manter domínio por tópico de 0 a 100, iniciando em 0. Acertos 
 - **WHEN** Ana acerta uma questão Médio desse tópico na turma A
 - **THEN** o domínio de Ana nesse tópico e turma passa a 70
 
-#### Scenario: Erro não produz valor negativo
+#### Scenario: Erro diminui domínio sem ficar negativo
 - **GIVEN** domínio zero em Vetores
 - **WHEN** Ana erra uma questão Fácil desse tópico
 - **THEN** o domínio permanece zero
@@ -121,6 +84,42 @@ Quando o Aluno errar duas questões seguidas no mesmo tópico e turma, o sistema
 - **GIVEN** Ana com um erro em Vetores em 2026.2 e nenhum em 2027.1
 - **WHEN** Ana erra pela primeira vez em Vetores em 2027.1
 - **THEN** o erro de 2026.2 não dispara uma sugestão de dois erros seguidos em 2027.1
+
+### Requirement: Trilha independente por aluno e turma
+O sistema MUST separar domínio por tópico, histórico de respostas, desbloqueios e progresso para cada combinação Aluno–Turma. Respostas de um aluno em uma turma MUST NOT alterar o estado de outro aluno ou turma, mesmo na mesma disciplina, graduação ou período. Não SHALL haver reaproveitamento automático de progresso entre ofertas.
+
+#### Scenario: Independência entre períodos
+- **GIVEN** Ana com tópico Vetores dominado na turma de Algoritmos de 2026.2 e nova matrícula em 2027.1
+- **WHEN** abre a trilha de 2027.1
+- **THEN** encontra domínio inicial zero e histórico vazio nessa turma e o estado de 2026.2 permanece intacto
+
+#### Scenario: Turmas paralelas não se influenciam
+- **GIVEN** Ana matriculada nas turmas A e B da mesma disciplina no mesmo período
+- **WHEN** responde corretamente na turma A
+- **THEN** somente o estado de Ana em A é atualizado e o de Ana em B permanece inalterado
+
+#### Scenario: Alunos não se influenciam
+- **GIVEN** Ana e Bruno matriculados na mesma turma
+- **WHEN** Ana domina um tópico
+- **THEN** domínio, histórico e desbloqueios de Bruno permanecem inalterados
+
+#### Scenario: Disciplinas distintas não se influenciam
+- **GIVEN** Ana matriculada em Algoritmos e Banco de Dados
+- **WHEN** responde em Algoritmos
+- **THEN** o estado da turma de Banco de Dados permanece inalterado
+
+### Requirement: Inicialização e retomada da trilha
+Na primeira matrícula, o sistema SHALL iniciar domínio e progresso em zero, histórico vazio e primeiro tópico desbloqueado quando houver conteúdo. Ao retomar a mesma matrícula, SHALL preservar o estado existente. O início do estudo MUST NOT exigir diagnóstico ou prova de nivelamento; conteúdo em rascunho MUST permanecer indisponível.
+
+#### Scenario: Início sem diagnóstico
+- **GIVEN** Ana recém-matriculada em turma com disciplina publicada
+- **WHEN** inicia o estudo
+- **THEN** recebe atividade Fácil do primeiro tópico sem realizar diagnóstico e os demais tópicos continuam bloqueados
+
+#### Scenario: Retomada preserva estado
+- **GIVEN** Ana com domínio 55 em um tópico da turma A
+- **WHEN** sai da demonstração, entra novamente e continua na turma A
+- **THEN** o domínio desse tópico continua em 55 e o histórico anterior está preservado
 
 ### Requirement: Conclusão da trilha da turma
 O progresso SHALL ser 100 vezes a razão entre tópicos dominados e tópicos da disciplina, por Aluno–Turma, sem arredondamento para cálculos posteriores. Somente a exibição SHALL arredondar ao inteiro mais próximo. Quando todos estiverem dominados, a trilha SHALL ser concluída. Sem tópicos, SHALL ter progresso zero e não concluída. Conclusão de trilha MUST NOT representar aprovação acadêmica ou conclusão da graduação.

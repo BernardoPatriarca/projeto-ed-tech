@@ -14,18 +14,6 @@ O sistema SHALL apresentar ao Aluno as graduações com nome, descrição curta 
 - **WHEN** o Aluno consulta as disciplinas dessa graduação no catálogo
 - **THEN** Algoritmos aparece com nível e número de tópicos e Banco de Dados não aparece como conteúdo disponível
 
-### Requirement: Busca e filtro no catálogo
-O sistema SHALL permitir buscar por nome de graduação ou disciplina e combinar filtros por área da graduação, nível pedagógico da disciplina e período das ofertas. Um filtro de período SHALL restringir os resultados às disciplinas com turma nesse período. Uma busca sem correspondência SHALL apresentar mensagem de resultado vazio.
-
-#### Scenario: Combinar filtros
-- **GIVEN** Algoritmos publicada, nível Iniciante, na área Tecnologia, com oferta em 2026.2
-- **WHEN** o Aluno busca Algoritmos e filtra Tecnologia, Iniciante e 2026.2
-- **THEN** o sistema apresenta a disciplina e apenas suas ofertas do período selecionado
-
-#### Scenario: Busca sem resultados
-- **WHEN** o Aluno busca um nome sem correspondência
-- **THEN** o sistema informa que nenhum resultado foi encontrado
-
 ### Requirement: Detalhe acadêmico e ofertas
 O sistema SHALL exibir no detalhe da graduação sua descrição e disciplinas publicadas. No detalhe da disciplina publicada, SHALL exibir descrição, graduação, tópicos ordenados e ofertas com código da turma, período e professores vinculados. Consultar metadados MUST NOT conceder acesso a materiais restritos, questões ou dados dos alunos de uma oferta.
 
@@ -65,3 +53,39 @@ O sistema SHALL listar ao Aluno apenas suas turmas matriculadas, identificando g
 #### Scenario: Aluno sem matrículas
 - **WHEN** um Aluno sem matrículas abre Minhas turmas
 - **THEN** o sistema informa que não há turmas vinculadas, sem apresentar turmas de outros alunos
+
+## MODIFIED Requirements
+
+### Requirement: Busca e filtro no catálogo
+O sistema SHALL permitir buscar por nome de graduação ou disciplina e combinar filtros por área da graduação, nível pedagógico da disciplina e período das ofertas. Um filtro de período SHALL restringir os resultados às disciplinas com turma nesse período. Uma busca sem correspondência SHALL apresentar mensagem de resultado vazio.
+
+#### Scenario: Combinar filtros
+- **GIVEN** Algoritmos publicada, nível Iniciante, na área Tecnologia, com oferta em 2026.2
+- **WHEN** o Aluno busca Algoritmos e filtra Tecnologia, Iniciante e 2026.2
+- **THEN** o sistema apresenta a disciplina e apenas suas ofertas do período selecionado
+
+#### Scenario: Busca sem resultados
+- **WHEN** o Aluno busca um nome sem correspondência
+- **THEN** o sistema informa que nenhum resultado foi encontrado
+
+#### Scenario: Filtrar por área
+- **WHEN** o Aluno filtra o catálogo pela área "Exatas"
+- **THEN** somente as graduações dessa área e suas disciplinas publicadas são exibidas
+
+## REMOVED Requirements
+
+### Requirement: Catálogo de cursos publicados
+**Reason**: Curso deixa de ser a unidade de conteúdo: o catálogo apresenta graduações e disciplinas publicadas.
+**Migration**: Use o requisito "Catálogo de graduações e disciplinas publicadas".
+
+### Requirement: Detalhe do curso
+**Reason**: O detalhe passa a ser da disciplina, com suas ofertas por turma e período.
+**Migration**: Use o requisito "Detalhe acadêmico e ofertas".
+
+### Requirement: Matrícula em curso
+**Reason**: A automatrícula do aluno foi substituída por matrícula administrativa em turma, feita por Administrador ou Coordenador autorizado.
+**Migration**: Use "Acesso às turmas sem automatrícula" (este capability) e "Matrícula administrativa em turma" (organizacao-academica).
+
+### Requirement: Meus cursos
+**Reason**: A lista passa a identificar graduação, disciplina, turma e período de cada matrícula.
+**Migration**: Use o requisito "Minhas turmas".

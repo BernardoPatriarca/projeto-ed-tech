@@ -24,26 +24,27 @@ A change `edtech-adaptativa-fase-inicial` entregou um protótipo em que curso re
 
 ### New Capabilities
 
-O inventário `openspec/specs/` está vazio: as seis capacidades anteriores existem somente em `openspec/changes/edtech-adaptativa-fase-inicial/specs/`, e a change ainda não foi arquivada. Por isso, a classificação abaixo considera a base consolidada do OpenSpec; as seis capacidades herdadas representam mudanças de comportamento já documentado e implementado, preservando seus identificadores para evitar duplicação.
+A base consolidada `openspec/specs/` passou a conter as seis capacidades da entrega inicial (`edtech-adaptativa-fase-inicial`, arquivada em ação separada e autorizada). Somente uma capacidade é nova:
 
 - `organizacao-academica`: estrutura de graduações, disciplinas, períodos letivos e turmas, com manutenção básica e vínculos aluno–turma, professor–turma e coordenador–curso.
-- `perfis-acesso`: evolução da capacidade anterior para incluir Coordenador, funções cumulativas e gestão acadêmica restrita aos cursos coordenados, além do acesso por turma vinculada, mantendo entrada simulada e administração de usuários.
-- `catalogo-cursos`: evolução do catálogo para apresentar graduações e suas disciplinas/ofertas, com acesso do aluno às turmas vinculadas, substituindo a matrícula direta em cursos de conteúdo.
-- `gestao-conteudo-curso`: autoria por disciplina, validação contínua da publicação e bloqueios após início do estudo que preservam respostas e resultados; o identificador anterior é preservado apesar da mudança de significado.
-- `aprendizado-adaptativo`: evolução da trilha por aluno–curso para aprendizagem nos tópicos da disciplina, contextualizada na turma, sem interferência entre disciplinas ou ofertas distintas.
-- `gamificacao`: evolução de XP, sequência e conquistas por curso para o contexto da disciplina/turma, mantendo as regras básicas de engajamento.
-- `acompanhamento-desempenho`: painéis básicos por função e vínculo, com médias da coordenação restritas a cada turma, inclusão de quem não iniciou e arredondamento apenas na exibição.
 
 ### Modified Capabilities
 
-Nenhuma capacidade consolidada em `openspec/specs/`, cujo inventário continua vazio nesta revisão. As sete specs permanecem com `Purpose` e `ADDED Requirements`; não há requisitos de base para `MODIFIED`, `REMOVED` ou `RENAMED`. Essa classificação não autoriza consolidar as duas changes como adições independentes: a dependência e o procedimento de reconciliação estão registrados abaixo.
+As seis capacidades herdadas recebem deltas sobre a base real. `MODIFIED` traz o bloco completo, com o nome exato da base e seus cenários originais preservados; `ADDED` traz comportamento novo; `REMOVED` traz `Reason` e `Migration` para os comportamentos substituídos (perfil único, automatrícula e escopos por curso). `RENAMED` não é usado, pois nenhuma substituição foi apenas de nome.
+
+- `perfis-acesso`: funções cumulativas e Coordenador, acesso por função e vínculo, gestão acadêmica restrita aos cursos coordenados; `MODIFIED`: entrada simulada e administração de usuários; `REMOVED`: perfis de usuário suportados, acesso restrito por perfil e vínculos entre usuários.
+- `catalogo-cursos`: catálogo de graduações e disciplinas, ofertas e acesso às turmas sem automatrícula; `MODIFIED`: busca e filtro; `REMOVED`: catálogo e detalhe de cursos, **matrícula em curso** (migra para a matrícula administrativa em turma) e meus cursos.
+- `gestao-conteudo-curso`: conteúdo por disciplina, bloqueio estrutural, proteção de questões respondidas, correção textual confirmada e validade contínua; `MODIFIED`: tópicos, materiais e banco de questões; `REMOVED`: criação e publicação de curso e escopo do professor.
+- `aprendizado-adaptativo`: trilha por aluno e turma, retomada, preservação em edições e respostas somente no contexto autorizado; `MODIFIED`: domínio, dificuldade, escolha, desbloqueio, feedback e revisão; `REMOVED`: trilha por curso e conclusão do curso.
+- `gamificacao`: XP, sequência e conquistas por turma; `MODIFIED`: sequência, conquistas e exibição; `REMOVED`: XP por curso.
+- `acompanhamento-desempenho`: painéis por função e vínculo, médias por turma com precisão e "Sem dados"; `MODIFIED`: painel do aluno, alunos com dificuldade, detalhe de aluno, painel do responsável e visão geral do administrador; `REMOVED`: painel do professor por curso.
 
 ## Impact
 
 - A base existente é um protótipo React/TypeScript/Vite em `prototipo/`, com repositório sobre `localStorage`. A evolução afetará os tipos e vínculos de domínio, dados de demonstração, repositório, rotas e permissões, catálogo, editor de conteúdo, motor adaptativo, gamificação, painéis e testes que hoje dependem de `cursoId`.
 - A documentação em `docs/` precisará refletir os novos conceitos, atores, jornadas e rastreabilidade. A change anterior permanece como registro da primeira entrega; sua conclusão não implica compatibilidade com o novo modelo.
 - Os dados locais atuais têm estrutura incompatível. Propõe-se restaurar uma nova base fictícia versionada, sem migrar históricos de demonstração; isso deve ser informado na experiência de atualização do protótipo.
-- Não se prevê API pública, serviço externo ou nova dependência obrigatória para esta entrega. A change permanece em especificação, sem implementação de código; design e tasks serão tratados em etapa posterior.
+- Não se prevê API pública, serviço externo ou nova dependência obrigatória para esta entrega. A change foi implementada nas tarefas 1–8 (ver `tasks.md` e `docs/validacao-final.md`).
 
 ### Premissas
 
@@ -63,15 +64,6 @@ Nenhuma capacidade consolidada em `openspec/specs/`, cujo inventário continua v
 - Correções em enunciado, texto das alternativas e explicação de questões respondidas exigem exibição da diferença e confirmação humana do próprio autor autorizado, sem segunda pessoa. A confirmação vale apenas para a alteração exata e a revisão original; novas alterações exigem nova confirmação. Significado, correspondência e ordem das alternativas são preservados; identidade, tópico, dificuldade, gabarito e exclusão continuam bloqueados. Respostas antigas exibem o conteúdo original sem alteração dos resultados ou datas.
 - Progresso médio e domínio médio por tópico são calculados por turma, incluindo todos os seus matriculados; não haverá média global da coordenação nesta entrega.
 
-### Dependência de consolidação
+### Dependência de consolidação (cumprida)
 
-A change `edtech-adaptativa-fase-inicial` continua fora da base consolidada, embora tenha implementação e tarefas concluídas. Seu modelo de curso de conteúdo, matrícula direta e perfil único é incompatível com esta evolução. A validação estrutural desta change não resolve essa dependência nem autoriza arquivamento automático.
-
-Antes de consolidar `organizacao-academica`, a entrega inicial deve ser revisada e consolidada em ação separada, explicitamente autorizada. Após isso, será necessário:
-
-1. Reler o inventário e cada spec efetivamente consolidada, com todos os seus cenários, e comparar cada requisito com os desta change.
-2. Converter as seis capacidades herdadas em deltas sobre os caminhos reais da base. Usar `MODIFIED` com o nome exato e o bloco completo atualizado quando houver mudança; deixar requisitos inalterados na base; usar `ADDED` apenas para comportamento novo. Usar `RENAMED` somente para troca de nome sem mudança de comportamento, e `REMOVED` com `Reason` e `Migration` para comportamentos substituídos.
-3. Eliminar explicitamente as regras incompatíveis: atualizar ou remover `Perfis de usuário suportados`, que exige perfil único, e remover/substituir `Matrícula em curso`, cuja migração é a matrícula administrativa em turma. Reconciliar também catálogo, autoria, trilha, XP e painéis por curso com os escopos disciplina/turma; acrescentar requisitos com novos nomes não remove os antigos automaticamente.
-4. Preservar entrada simulada, administração de usuários, restrições por vínculo, materiais e questões, regras adaptativas e gamificação básicas que continuam válidas. Conferir a base resultante para não manter regras antigas e novas contraditórias, atualizar este proposal e executar novamente a validação estrita antes de solicitar a consolidação desta change.
-
-Este procedimento está pendente; nenhuma base, change anterior ou arquivo de arquivamento é alterado nesta revisão.
+A change `edtech-adaptativa-fase-inicial` foi arquivada em ação separada e autorizada (`openspec/changes/archive/2026-11-17-edtech-adaptativa-fase-inicial`), o que criou a base `openspec/specs/`. Em seguida os deltas desta change foram reconciliados contra essa base, requisito a requisito, eliminando as regras de perfil único, automatrícula e escopo por curso, e a validação estrita foi repetida antes do arquivamento desta change.

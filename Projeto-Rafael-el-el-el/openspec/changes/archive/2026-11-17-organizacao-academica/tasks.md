@@ -93,9 +93,7 @@ Ordem: grupo 1 fornece contratos ao 2; o 3 usa políticas e persistência do 2 e
 
 ## Workflow follow-up
 
-- Dependência antes do arquivamento: a base `openspec/specs/` continua vazia. A revisão e consolidação de `edtech-adaptativa-fase-inicial` exigem ação separada autorizada; não arquivar nem consolidar qualquer change como efeito da execução deste checklist.
-- Depois de a base inicial estar efetivamente disponível, reler suas specs e reconciliar cada requisito e cenário das seis capacidades herdadas: `MODIFIED` com bloco completo e nome exato, `ADDED` somente para novidades, `REMOVED` com `Reason` e `Migration`, e `RENAMED` somente para renomeação sem mudança de comportamento. Preservar requisitos inalterados e eliminar perfil único, automatrícula e outros escopos por curso de conteúdo incompatíveis; não basta reclassificar capacidades no proposal.
-- Atualizar proposal e deltas de forma coerente, conferir a base resultante e repetir validação estrita e revisão de correspondência com a implementação. Somente após essa reconciliação e revisão poderá ser solicitado o arquivamento de `organizacao-academica`, em ação separada. Essa dependência não impede implementar os contratos aprovados, mas impede considerar a change pronta para arquivamento.
+- Concluído em ação separada e autorizada: `edtech-adaptativa-fase-inicial` foi arquivada, criando a base `openspec/specs/`; os deltas desta change foram reconciliados contra ela (`MODIFIED` com bloco completo e cenários originais, `ADDED` para novidades, `REMOVED` com `Reason` e `Migration`; `RENAMED` não foi necessário) e a validação estrita foi repetida. Em seguida `organizacao-academica` foi arquivada.
 - O design não apresenta decisão de produto pendente para os fluxos especificados. Não incluir aprovação obrigatória por segunda pessoa, bloqueios de calendário ou garantia de escrita simultânea entre abas sem revisão explícita do escopo.
 
 [OA]: specs/organizacao-academica/spec.md

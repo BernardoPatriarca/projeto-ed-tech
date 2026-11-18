@@ -1,6 +1,6 @@
 # Validação final — change `organizacao-academica` (tarefas 8.2 a 8.4)
 
-Este documento registra, **separadamente**, o que foi verificado por comportamento (testes e uso do aplicativo), o que foi verificado por build, e a revisão de coerência dos artefatos. Nenhuma dessas verificações substitui a consolidação e o arquivamento, que permanecem fora desta etapa (`tasks.md`, *Workflow follow-up*).
+Este documento registra, **separadamente**, o que foi verificado por comportamento (testes e uso do aplicativo), o que foi verificado por build, e a revisão de coerência dos artefatos. A consolidação e o arquivamento (seção 5) foram feitos depois, em ação separada e autorizada.
 
 ## 1. Validação integrada entre funções (8.2)
 
@@ -51,7 +51,14 @@ Comando: `npm run build` em `prototipo/` (`tsc -b` e `vite build`) — **aprovad
 Revisados proposal, as sete specs, design e checklist contra o comportamento entregue:
 
 - **Coerente:** funções cumulativas e Coordenador; conteúdo por disciplina; bloqueios após resposta e proteção de questões; confirmação textual do próprio autor; validade contínua; estudo, XP, sequência e conquistas por matrícula; médias por turma com precisão e “Sem dados”; entrada simulada; demonstração com aviso e restauração.
-- **Ajuste feito nos artefatos:** o design (D9 e Migration Plan) falava só em implementação “futura” e “entrega documental”; foram acrescentadas notas de implementação indicando que o plano foi seguido e que consolidação, reconciliação de D10 e arquivamento **continuam pendentes**.
+- **Ajuste feito nos artefatos:** o design (D9 e Migration Plan) falava só em implementação “futura” e “entrega documental”; foram acrescentadas notas de implementação indicando que o plano foi seguido e que consolidação, reconciliação de D10 e arquivamento foram executados depois (seção 5).
 - **Decisões de interpretação (specs silenciosas) a confirmar:** (a) a visão geral conta pessoas distintas **ativas ou inativas**; (b) o contrato de *Visão geral* e dos demais painéis usa valores exatos e só a apresentação arredonda; (c) a coordenação edita graduações, disciplinas e turmas do seu escopo em *Cadastros* (períodos e novas graduações são do Administrador); (d) qualquer pessoa autenticada pode avançar a data virtual (controle de demonstração já existente).
 - **Limitações conhecidas:** o painel da coordenação mostra o domínio médio por tópico como números em ordem, sem rótulos; não há exclusão mútua entre abas (documentado no README); o código legado (`Repositorio`, `Dados`, motor por curso, seed legado) permanece como cópia técnica/reuso de conteúdo e não é usado pelas telas.
-- **Validação estrutural do OpenSpec — executada** (CLI `@fission-ai/openspec` 2.1.0, instalado a pedido): `openspec validate organizacao-academica --strict` → *Change 'organizacao-academica' is valid*; `openspec status --change organizacao-academica` → 4/4 artefatos completos (proposal, specs, design, tasks). Isso valida apenas a **estrutura** dos artefatos e **não comprova comportamento** (que está nas seções 1–3). E concluir a implementação **não elimina a dependência de consolidação**: a base `openspec/specs/` continua vazia e `edtech-adaptativa-fase-inicial` não foi consolidada nem arquivada; a reconciliação de D10 e o arquivamento seguem como ações separadas.
+- **Validação estrutural do OpenSpec — executada** (CLI `@fission-ai/openspec` 2.1.0, instalado a pedido): `openspec validate organizacao-academica --strict` → válida; `openspec status` → 4/4 artefatos completos. Isso valida apenas a **estrutura** e **não comprova comportamento** (seções 1–3).
+
+## 5. Consolidação e arquivamento (ação separada e autorizada)
+
+1. `openspec archive edtech-adaptativa-fase-inicial` → criou a base `openspec/specs/` (6 capacidades, 34 requisitos) e arquivou a change em `openspec/changes/archive/2026-11-17-edtech-adaptativa-fase-inicial`.
+2. Reconciliação (D10): os deltas de `organizacao-academica` foram reescritos contra a base — `MODIFIED` com bloco completo e cenários originais preservados (20), `ADDED` para novidades (44), `REMOVED` com `Reason` e `Migration` para os comportamentos substituídos (14: perfil único, automatrícula e escopos por curso); `RENAMED` não foi necessário. Proposal, `tasks.md` e design foram atualizados.
+3. `openspec archive organizacao-academica` → aplicou os deltas (+44, ~20, −14) e arquivou em `openspec/changes/archive/2026-11-17-organizacao-academica`; o `Purpose` das seis capacidades herdadas foi atualizado na base.
+4. `openspec validate --all --strict` → 7 specs válidas; a base resultante não contém regras de perfil único nem de automatrícula (só o requisito *Acesso às turmas sem automatrícula*) e tem 64 requisitos, todos com teste em [rastreabilidade.md](rastreabilidade.md).

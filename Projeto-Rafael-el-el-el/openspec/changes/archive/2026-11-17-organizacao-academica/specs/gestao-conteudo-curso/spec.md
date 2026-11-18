@@ -19,18 +19,6 @@ O sistema SHALL manter tópicos, materiais, questões e publicação na discipli
 - **WHEN** o Administrador cria outra turma dessa disciplina
 - **THEN** essa turma utiliza o mesmo conteúdo, sem criar uma segunda disciplina ou um segundo banco de questões
 
-### Requirement: Tópicos ordenados
-O Professor autorizado SHALL poder adicionar, remover e reordenar tópicos somente enquanto não houver resposta registrada em nenhuma turma da disciplina. O título SHALL ser obrigatório e sua edição MUST preservar o significado de tópicos com respostas. A ordem SHALL definir a sequência de desbloqueio nas turmas. Toda alteração SHALL respeitar a cobertura exigida para conteúdo publicado.
-
-#### Scenario: Reordenar tópicos
-- **GIVEN** nenhuma resposta registrada em qualquer turma da disciplina e conteúdo com cobertura válida
-- **WHEN** o Professor autorizado move Estruturas de repetição para antes de Vetores
-- **THEN** a disciplina apresenta essa ordem e uma nova matrícula começa com o primeiro tópico dessa sequência desbloqueado
-
-#### Scenario: Tópico sem título
-- **WHEN** o Professor tenta salvar um tópico sem título
-- **THEN** o sistema rejeita o cadastro e indica o campo obrigatório
-
 ### Requirement: Bloqueio estrutural após início do estudo
 A partir da primeira resposta válida registrada em qualquer turma da disciplina, o sistema MUST rejeitar adição, remoção e reordenação de tópicos dessa disciplina. O bloqueio SHALL valer para todas as ofertas e autores, inclusive Administrador, independentemente de a turma acessada estar vazia, sem respostas ou com trilhas concluídas. O sistema SHALL informar que o estudo já foi iniciado.
 
@@ -48,33 +36,6 @@ A partir da primeira resposta válida registrada em qualquer turma da disciplina
 - **GIVEN** turma A de Algoritmos com uma resposta e turma B da mesma disciplina em outro período, sem alunos
 - **WHEN** o Professor vinculado somente a B tenta reordenar tópicos da disciplina
 - **THEN** a alteração é rejeitada por existir estudo em A e a ordem permanece igual nas duas turmas
-
-### Requirement: Materiais por tópico
-O Professor autorizado SHALL poder adicionar e ajustar materiais de texto, vídeo por link ou arquivo por link, inclusive após início ou conclusão do estudo. Esses ajustes MUST NOT modificar tópicos, questões, regras de avaliação ou resultados anteriores. Os materiais SHALL ser consultáveis pelo Aluno matriculado em turma da disciplina publicada, sem acesso a dados de colegas.
-
-#### Scenario: Adicionar material
-- **WHEN** o Professor adiciona um link de vídeo ao tópico Estruturas de repetição
-- **THEN** o material aparece nesse tópico para os alunos matriculados nas turmas da disciplina publicada
-
-#### Scenario: Ajuste seguro após estudo em várias turmas
-- **GIVEN** Ana em andamento em A e Bruno com trilha concluída em B, ambas de Algoritmos
-- **WHEN** o Professor autorizado corrige um link de vídeo sem alterar tópicos, questões ou regras de avaliação
-- **THEN** o novo link fica disponível nas duas turmas, sem modificar os históricos ou resultados de Ana e Bruno
-
-### Requirement: Banco de questões classificado
-O Professor autorizado SHALL poder cadastrar questões de múltipla escolha vinculadas a um tópico da disciplina, com enunciado, ao menos duas alternativas, exatamente uma alternativa correta, explicação e dificuldade Fácil, Médio ou Difícil. O sistema MUST rejeitar questão sem alternativa correta válida, explicação ou tópico pertencente à disciplina.
-
-#### Scenario: Cadastrar questão
-- **WHEN** o Professor cadastra uma questão válida no tópico Vetores com dificuldade Médio
-- **THEN** a questão aparece no banco desse tópico com a dificuldade informada
-
-#### Scenario: Questão sem alternativa correta
-- **WHEN** o Professor tenta salvar uma questão sem indicar uma alternativa correta preenchida
-- **THEN** o sistema não salva e informa que é preciso marcar uma alternativa correta válida
-
-#### Scenario: Questão com tópico de outra disciplina
-- **WHEN** o Professor tenta cadastrar em Algoritmos uma questão vinculada a tópico de Direito Civil
-- **THEN** o sistema rejeita a associação e não altera nenhum dos bancos de questões
 
 ### Requirement: Proteção de questões com respostas
 O sistema MUST rejeitar exclusão, reordenação de alternativas e mudanças de identidade, tópico, dificuldade ou gabarito de questão respondida em qualquer turma, mesmo com confirmação humana. Correções textuais SHALL seguir o requisito Correção textual de questões respondidas, sem mudar significado ou correspondência das alternativas. Questões sem respostas SHALL admitir edição e remoção por autor autorizado, respeitando cobertura publicada e resultados existentes.
@@ -201,3 +162,58 @@ O Professor SHALL poder manter e publicar conteúdo apenas de disciplinas com tu
 - **GIVEN** Carla somente Coordenador, vinculada a Direito, e criadora do cadastro de Direito Civil
 - **WHEN** tenta adicionar tópicos ou publicar conteúdo dessa disciplina
 - **THEN** o sistema nega a operação, mantendo a permissão de Carla para editar dados cadastrais, turmas, matrículas e vínculos docentes de Direito
+
+## MODIFIED Requirements
+
+### Requirement: Tópicos ordenados
+O Professor autorizado SHALL poder adicionar, remover e reordenar tópicos somente enquanto não houver resposta registrada em nenhuma turma da disciplina. O título SHALL ser obrigatório e sua edição MUST preservar o significado de tópicos com respostas. A ordem SHALL definir a sequência de desbloqueio nas turmas. Toda alteração SHALL respeitar a cobertura exigida para conteúdo publicado.
+
+#### Scenario: Reordenar tópicos
+- **GIVEN** nenhuma resposta registrada em qualquer turma da disciplina e conteúdo com cobertura válida
+- **WHEN** o Professor autorizado move Estruturas de repetição para antes de Vetores
+- **THEN** a disciplina apresenta essa ordem e uma nova matrícula começa com o primeiro tópico dessa sequência desbloqueado
+
+#### Scenario: Tópico sem título
+- **WHEN** o Professor tenta salvar um tópico sem título
+- **THEN** o sistema rejeita o cadastro e indica o campo obrigatório
+
+### Requirement: Materiais por tópico
+O Professor autorizado SHALL poder adicionar e ajustar materiais de texto, vídeo por link ou arquivo por link, inclusive após início ou conclusão do estudo. Esses ajustes MUST NOT modificar tópicos, questões, regras de avaliação ou resultados anteriores. Os materiais SHALL ser consultáveis pelo Aluno matriculado em turma da disciplina publicada, sem acesso a dados de colegas.
+
+#### Scenario: Adicionar material
+- **WHEN** o Professor adiciona um link de vídeo ao tópico Estruturas de repetição
+- **THEN** o material aparece nesse tópico para os alunos matriculados nas turmas da disciplina publicada
+
+#### Scenario: Ajuste seguro após estudo em várias turmas
+- **GIVEN** Ana em andamento em A e Bruno com trilha concluída em B, ambas de Algoritmos
+- **WHEN** o Professor autorizado corrige um link de vídeo sem alterar tópicos, questões ou regras de avaliação
+- **THEN** o novo link fica disponível nas duas turmas, sem modificar os históricos ou resultados de Ana e Bruno
+
+### Requirement: Banco de questões classificado
+O Professor autorizado SHALL poder cadastrar questões de múltipla escolha vinculadas a um tópico da disciplina, com enunciado, ao menos duas alternativas, exatamente uma alternativa correta, explicação e dificuldade Fácil, Médio ou Difícil. O sistema MUST rejeitar questão sem alternativa correta válida, explicação ou tópico pertencente à disciplina.
+
+#### Scenario: Cadastrar questão
+- **WHEN** o Professor cadastra uma questão válida no tópico Vetores com dificuldade Médio
+- **THEN** a questão aparece no banco desse tópico com a dificuldade informada
+
+#### Scenario: Questão sem alternativa correta
+- **WHEN** o Professor tenta salvar uma questão sem indicar uma alternativa correta preenchida
+- **THEN** o sistema não salva e informa que é preciso marcar uma alternativa correta válida
+
+#### Scenario: Questão com tópico de outra disciplina
+- **WHEN** o Professor tenta cadastrar em Algoritmos uma questão vinculada a tópico de Direito Civil
+- **THEN** o sistema rejeita a associação e não altera nenhum dos bancos de questões
+
+## REMOVED Requirements
+
+### Requirement: Criação de curso
+**Reason**: Tópicos, materiais, questões e publicação pertencem à disciplina; a graduação deixa de ser criada como trilha pelo professor.
+**Migration**: Use o requisito "Conteúdo pertencente à disciplina".
+
+### Requirement: Publicação de curso
+**Reason**: A publicação passa a ser do conteúdo da disciplina, sem publicar uma graduação como trilha.
+**Migration**: Use o requisito "Publicação de conteúdo da disciplina".
+
+### Requirement: Escopo do professor
+**Reason**: A autoria passa a decorrer do vínculo com turma da disciplina, não de vínculo com curso.
+**Migration**: Use o requisito "Escopo do professor sobre conteúdo".
