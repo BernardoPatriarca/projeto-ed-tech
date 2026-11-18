@@ -205,7 +205,7 @@ Preservar data virtual determinística e os utilitários de datas existentes. As
 
 ### D9. Estratégia de testes baseada nos cenários de aceitação
 
-Reutilizar Vitest, Testing Library, armazenamento injetável no `Repositorio` e `MemoryRouter` de `testes/renderizar.tsx`. Não adicionar framework de testes nem escrever testes nesta etapa. A implementação futura deve ligar cada cenário das specs a um teste ou roteiro de validação explícito; a tabela identifica os grupos e os pontos de maior risco.
+Reutilizar Vitest, Testing Library, armazenamento injetável no `Repositorio` e `MemoryRouter` de `testes/renderizar.tsx`. Não adicionar framework de testes nem escrever testes nesta etapa. A implementação futura deve ligar cada cenário das specs a um teste ou roteiro de validação explícito; a tabela identifica os grupos e os pontos de maior risco. _(Nota da etapa de implementação: os testes foram escritos nas tarefas 1–8; a ligação requisito → teste/roteiro está em `docs/rastreabilidade.md`.)_
 
 | Fonte e cenários | Nível e evidência esperada |
 | --- | --- |
@@ -254,6 +254,8 @@ Na primeira abertura da versão nova com dados legados, apresentar o aviso e agu
 Para rollback técnico, voltar ao código anterior junto com seu namespace de dados legado preservado; a versão anterior não deve tentar consumir a base acadêmica. Isso não transporta para a versão antiga o estudo realizado no novo modelo. O rollback de uma edição individual recusada é a ausência de gravação, sem operações compensatórias que possam modificar conquistas ou históricos.
 
 Antes do arquivamento, cumprir a reconciliação de D10 em etapa separada. Nesta entrega documental não são executados migração, build do protótipo, testes comportamentais, consolidação, commit ou push.
+
+**Nota da etapa de implementação (tarefas 1–8).** O plano acima foi seguido: modelo e comandos autorizados, consultas, telas e seed novos, com inicialização separada da inspeção, namespace `trilha-adaptativa:academico:*` e preservação do legado como cópia técnica. Os testes e o build foram executados (`docs/validacao-final.md`). **Permanecem não executados** a consolidação da base inicial, a reconciliação de D10 e o arquivamento; a validação estrutural do OpenSpec não pôde ser executada nesta máquina (CLI ausente).
 
 ## Open Questions
 

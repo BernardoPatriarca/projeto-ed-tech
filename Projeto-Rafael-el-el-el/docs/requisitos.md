@@ -172,7 +172,7 @@ $env:NODE_OPTIONS = "$env:NODE_OPTIONS --no-experimental-webstorage"
 npm.cmd test -- --run
 ```
 
-O build continua com `npm.cmd run build` (TypeScript e Vite). Antes destas tarefas, a suíte completa apresentou 120 testes aprovados e uma falha de seletor em `src/testes/aluno.test.tsx:43`: o teste de matrícula encontra mais de uma lista com nome acessível vazio. Essa falha preexistente deve continuar sendo reportada separadamente; seu teste e o fluxo legado não foram alterados nesta etapa.
+O build continua com `npm.cmd run build` (TypeScript e Vite). A falha de seletor preexistente em `src/testes/aluno.test.tsx:43` (testes de matrícula e trilha por curso) deixou de existir na tarefa 7: os testes de interface legados (`aluno.test.tsx`, `perfis.test.tsx`) foram substituídos por testes dos novos fluxos acadêmicos. Resultados e evidências desta change estão em [validacao-final.md](validacao-final.md).
 
 ## Requisitos Funcionais da entrega inicial (referência histórica)
 

@@ -4,6 +4,8 @@ Jornadas por perfil e diagramas de atividade/sequência dos fluxos principais. O
 
 ## 1. Jornadas por perfil
 
+> **Referência histórica** (entrega inicial `edtech-adaptativa-fase-inicial`): perfil único por pessoa, matrícula pelo próprio aluno e estudo por curso; veja a §7 (Aluno e Coordenação) e a §4.1 (conteúdo) para a organização acadêmica. Não descreve o comportamento atual.
+
 ### Aluno
 ```mermaid
 journey
@@ -65,6 +67,8 @@ journey
 
 ## 2. Matrícula em curso (UC02, UC03 — RF06–RF10)
 
+> **Referência histórica** (entrega inicial `edtech-adaptativa-fase-inicial`): a matrícula direta em curso (automatrícula) foi substituída pela matrícula **administrativa em turma** — veja a §7.2 e o UC18. Não descreve o comportamento atual.
+
 ```mermaid
 flowchart TD
     I([Início]) --> C[Aluno abre o catálogo]
@@ -85,6 +89,8 @@ flowchart TD
 ```
 
 ## 3. Sessão adaptativa (UC04, UC05, UC06 — RF17–RF28)
+
+> **Referência histórica** (entrega inicial `edtech-adaptativa-fase-inicial`): as regras numéricas continuam valendo, mas o estudo agora é por matrícula (aluno + turma) — veja a §7.1. Não descreve o comportamento atual.
 
 ### Atividade
 ```mermaid
@@ -140,6 +146,8 @@ sequenceDiagram
 ```
 
 ## 4. Criação e publicação de curso (UC08–UC11 — RF11–RF16)
+
+> **Referência histórica** (entrega inicial `edtech-adaptativa-fase-inicial`): o conteúdo agora pertence à disciplina — veja a §4.1. Não descreve o comportamento atual.
 
 ```mermaid
 flowchart TD
@@ -227,6 +235,8 @@ Regras do fluxo:
 
 ## 5. Acompanhamento pelo professor (UC12 — RF30–RF32)
 
+> **Referência histórica** (entrega inicial `edtech-adaptativa-fase-inicial`): o painel é por turma vinculada, com médias da turma — veja `requisitos.md` (indicadores por turma). Não descreve o comportamento atual.
+
 ```mermaid
 flowchart TD
     I([Professor]) --> C[Escolher curso vinculado]
@@ -241,6 +251,8 @@ flowchart TD
 ```
 
 ## 6. Acompanhamento pelo responsável (UC16 — RF33)
+
+> **Referência histórica** (entrega inicial `edtech-adaptativa-fase-inicial`): o painel traz uma linha por oferta — veja o UC16 atualizado em `casos-de-uso.md`. Não descreve o comportamento atual.
 
 ```mermaid
 sequenceDiagram

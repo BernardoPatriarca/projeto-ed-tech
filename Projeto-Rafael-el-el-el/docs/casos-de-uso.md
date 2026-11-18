@@ -7,6 +7,8 @@
 
 ## Diagrama geral
 
+> **Referência histórica** (entrega inicial): o diagrama, a matriz e as descrições UC01–UC16 abaixo refletem perfil único e matrícula pelo próprio aluno (UC03). Para a organização acadêmica valem os casos atualizados da seção final deste arquivo (UC13/UC14, UC16, UC17 e UC18); UC03 foi substituído por matrícula administrativa.
+
 ```mermaid
 flowchart LR
     A["👤 Aluno"]
@@ -94,7 +96,7 @@ flowchart LR
   - **A1 — Sair:** o usuário aciona "Sair"; o sistema volta à tela de entrada.
   - **A2 — Acesso indevido:** o usuário acessa o endereço de outra área; o sistema redireciona para a área do seu perfil.
 
-### UC03 — Matricular-se em curso (RF08–RF10)
+### UC03 — Matricular-se em curso (RF08–RF10) — _histórico; substituído pelo UC18_
 - **Ator:** Aluno.
 - **Pré-condição:** curso publicado; aluno ainda não matriculado.
 - **Fluxo principal:**
@@ -182,3 +184,11 @@ Os casos abaixo **substituem** as descrições por perfil único e por curso aci
 - **Ator:** Administrador.
 - **Fluxo principal:** o sistema apresenta o total de **pessoas distintas**, as pessoas por função (quem tem duas funções conta uma vez no total e uma vez em cada função), graduações, disciplinas **por estado de publicação** (publicadas e em rascunho), períodos letivos, turmas e matrículas.
 - **Regra:** graduações não são contadas como publicadas nem como rascunho — a publicação pertence à disciplina.
+
+### UC18 — Matricular aluno em turma (7.7)
+- **Ator:** Administrador ou Coordenador do curso da turma (o Aluno **não** se matricula).
+- **Fluxo principal:** em *Gestão acadêmica*, o ator escolhe a turma do seu escopo e um aluno ativo e registra a matrícula na data virtual. A matrícula não depende da publicação do conteúdo, mas o estudo fica indisponível enquanto a disciplina estiver em rascunho.
+- **Regras e alternativos:**
+  - **A1 — Matrícula repetida:** o sistema informa que o aluno já estava matriculado e preserva respostas, XP e progresso (nada é reiniciado).
+  - **A2 — Outro período:** nova matrícula em outra oferta da mesma disciplina começa do zero, sem copiar o histórico.
+  - **A3 — Fora do escopo:** turma de outro curso é negada (a coordenação não a vê nem a acessa por endereço direto).
